@@ -1,0 +1,50 @@
+{
+    "title": "Weather Based Heating Sensor",
+    "config": {
+        "step": {
+            "user": {
+                "title": "Configure Weather Based Heating Sensor",
+                "description": "Select sensors for calculating the target heat carrier temperature.",
+                "data": {
+                    "name": "Sensor Name",
+                    "wda_min_coolant_temp": "Min Coolant Temperature",
+                    "wda_max_coolant_temp": "Max Coolant Temperature",
+                    "wda_target_room_temp": "Target Room Temperature Sensor",
+                    "wda_heating_curve": "Heating Curve Sensor",
+                    "wda_outside_temp": "Outside Temperature Sensor",
+                    "wda_wind_speed": "Wind Speed Sensor (Optional)",
+                    "wda_outside_humidity": "Outside Humidity Sensor (Optional)",
+                    "wda_inside_temp": "Inside Temperature Sensor (Optional)",
+                    "wda_room_temp_correction": "Inside Temperature Correction Coefficient",
+                    "wda_wind_correction": "Wind Correction Coefficient",
+                    "wda_humidity_correction": "Humidity Correction Coefficient"
+                }
+            }
+        },
+        "error": {
+            "invalid_sensor": "Selected sensor is not valid."
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Update Weather Based Heating Sensor Settings",
+                "description": "Modify the settings of the Weather Based Heating Sensor.",
+                "data": {
+                    "name": "Sensor Name",
+                    "wda_min_coolant_temp": "Min Coolant Temperature",
+                    "wda_max_coolant_temp": "Max Coolant Temperature",
+                    "wda_target_room_temp": "Target Room Temperature Sensor",
+                    "wda_heating_curve": "Heating Curve Sensor",
+                    "wda_outside_temp": "Outside Temperature Sensor",
+                    "wda_wind_speed": "Wind Speed Sensor (Optional)",
+                    "wda_outside_humidity": "Outside Humidity Sensor (Optional)",
+                    "wda_inside_temp": "Inside Temperature Sensor (Optional)",
+                    "wda_room_temp_correction": "Room Temperature Correction Coefficient",
+                    "wda_wind_correction": "Wind Correction Coefficient",
+                    "wda_humidity_correction": "Humidity Correction Coefficient"
+                }
+            }
+        }
+    }
+}
