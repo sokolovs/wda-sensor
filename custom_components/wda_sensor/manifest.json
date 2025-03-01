@@ -8,6 +8,5 @@
     "requirements": [],
     "dependencies": [],
     "codeowners": ["@sokolovs"],
-    "iot_class": "local_polling",
-    "supported_platforms": ["sensor"]
+    "iot_class": "local_polling"
 }
