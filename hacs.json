@@ -1,6 +1,5 @@
 {
   "name": "WDA Sensor",
   "render_readme": true,
-  "homeassistant":  "2024.10.0",
-  "domains": ["sensor"]
+  "homeassistant":  "2024.10.0"
 }
