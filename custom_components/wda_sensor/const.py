@@ -1,0 +1,4 @@
+# WDA domain
+DOMAIN = "wda_sensor"
+SENSOR_UPDATE_SIGNAL = "WDA_SENSOR_OPTIONS_UPDATED"
+NOT_SELECTED_VALUE = "not_selected"
