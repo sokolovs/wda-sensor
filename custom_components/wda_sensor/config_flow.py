@@ -4,23 +4,39 @@ from homeassistant import config_entries
 from homeassistant.const import Platform
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_send
+from homeassistant.helpers.translation import async_get_translations
 
 import voluptuous as vol
 
 from . import get_config_value
-from .const import DOMAIN, SENSOR_UPDATE_SIGNAL
+from .const import DOMAIN, NOT_SELECTED_VALUE, SENSOR_UPDATE_SIGNAL
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def create_schema(config_entry=None, hass=None):
+async def get_user_language(hass):
+    user_language = hass.data.get("language")
+    return user_language if user_language else hass.config.language
+
+
+async def get_translation(hass, key, default="Not found..."):
+    language = await get_user_language(hass)
+    translations = await async_get_translations(hass, language, "common", [])
+    return translations.get(key, default)
+
+
+async def create_schema(hass, config_entry=None):
     """ Common schema for ConfigFlow and OptionsFlow."""
 
-    sensors = {
-        s.entity_id: s.name
-        for s in hass.states.async_all()
-        if s.domain == Platform.SENSOR
-    }
+    sensors = {}
+    sensors[NOT_SELECTED_VALUE] = await get_translation(hass, NOT_SELECTED_VALUE, "Not selected...")
+
+    # Add sensors
+    sorted_sensors = sorted(
+        [s for s in hass.states.async_all() if s.domain == Platform.SENSOR],
+        key=lambda s: s.name.lower()
+    )
+    sensors.update({s.entity_id: s.name for s in sorted_sensors})
 
     def get_config(key, default=None):
         return get_config_value(config_entry, key, default)
@@ -86,7 +102,7 @@ class WDASensorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """ Handle the initial step. """
-        _LOGGER.info("Request to create config: %s", user_input)
+        _LOGGER.warning("Request to create config: %s", user_input)
 
         errors = {}
 
@@ -120,7 +136,8 @@ class WDASensorOptionsFlow(config_entries.OptionsFlow):
 
         if user_input is not None:
             for key in ["wda_inside_temp", "wda_wind_speed", "wda_outside_humidity"]:
-                if not user_input.get(key):
+                input_value = user_input.get(key)
+                if input_value == NOT_SELECTED_VALUE:
                     user_input[key] = None
 
             # Update configuration
@@ -132,8 +149,8 @@ class WDASensorOptionsFlow(config_entries.OptionsFlow):
             return self.async_create_entry(title="", data=user_input)
 
         schema = await create_schema(
-            config_entry=self.config_entry,
-            hass=self.hass
+            hass=self.hass,
+            config_entry=self.config_entry
         )
         return self.async_show_form(
             step_id="init",
