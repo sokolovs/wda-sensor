@@ -1,13 +1,12 @@
 {
     "domain": "wda_sensor",
     "name": "WDA Sensor",
-    "version": "1.0.0",
+    "codeowners": ["@sokolovs"],
     "config_flow": true,
+    "dependencies": [],
     "documentation": "https://github.com/sokolovs/wda-sensor/wiki",
+    "iot_class": "local_polling",
     "issue_tracker": "https://github.com/sokolovs/wda-sensor/issues",
     "requirements": [],
-    "dependencies": [],
-    "codeowners": ["@sokolovs"],
-    "iot_class": "local_polling",
-    "supported_platforms": ["sensor"]
+    "version": "1.0.0"
 }
