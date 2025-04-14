@@ -62,8 +62,8 @@ async def create_schema(hass, config_entry=None):
 
         vol.Required(
             "wda_heating_curve",
-            default=get_config("wda_heating_curve", 25)): vol.All(
-                vol.Coerce(int), vol.Range(min=1, max=100)),
+            default=get_config("wda_heating_curve", 60)): vol.All(
+                vol.Coerce(int), vol.Range(min=1, max=200)),
 
         # Sensors
         vol.Required(

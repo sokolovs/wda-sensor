@@ -6,6 +6,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.event import async_track_state_change_event
 
 from . import get_config_value
+from .calc import calc_target
 from .const import SENSOR_UPDATE_SIGNAL
 
 _LOGGER = logging.getLogger(__name__)
@@ -134,12 +135,7 @@ class WDASensor(SensorEntity):
                 self.get_config("wda_inside_temp"))
 
             # Base value
-            temp_factor = (20 - outside_temp) / 40
-            target_heat_temp = (
-                min_coolant_temp +
-                (max_coolant_temp - min_coolant_temp) *
-                (1 - (1 - temp_factor) ** (heating_curve / 50))
-            )
+            target_heat_temp = calc_target(outside_temp, heating_curve)
 
             # Room Temperature Correction
             if room_temp_correction and inside_temp is not None:
