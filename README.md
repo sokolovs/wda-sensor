@@ -1,10 +1,11 @@
 # 🔥 Weather Dependent Automation Sensor for Home Assistant
 
-This integration allows you to create a sensor that calculates the required **heating system temperature** based on the **heating curve number** (from 1 to 100) and an **outdoor temperature sensor**. The calculated temperature can be used to control your heating boiler.
+This integration allows you to create a sensor that calculates the required **heating system temperature** based on the **heating curve number** (from 1 to 200) and an **outdoor temperature sensor**. The calculated temperature can be used to control your heating boiler.
 
 ## ⚙ Features
 - Define **minimum and maximum temperature limits** to match your boiler's supported range.
 - Create **multiple independent sensors**, each with its own settings.
+- Customize the **heating curve shape** by adjusting the exponent range for more precise control.
 - Adjust sensor parameters **at any time** without restarting Home Assistant.
 
 ## 📌 Additional Factors (Optional)

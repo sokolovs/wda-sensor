@@ -3,11 +3,12 @@ import logging
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.const import STATE_UNAVAILABLE, STATE_UNKNOWN, UnitOfTemperature
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
+from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import async_track_state_change_event
 
 from . import get_config_value
 from .calc import calc_target
-from .const import SENSOR_UPDATE_SIGNAL
+from .const import *
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -15,17 +16,18 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """ Set up WDASensor from a config entry. """
     async_add_entities([WDASensor(hass, config_entry)], update_before_add=True)
+    async_add_entities([WDACurveSensor(hass, config_entry)], update_before_add=True)
 
 
 class WDASensor(SensorEntity):
     """ Weather Dependent Automation Sensor for boiler automation. """
 
     # Defaults
-    min_coolant_temp = 40
-    max_coolant_temp = 80
-    target_room_temp = 21.5
-    heating_curve = 25
-    humidity_threshold = 50
+    min_coolant_temp = DEFAULT_MIN_COOLANT_TEMP
+    max_coolant_temp = DEFAULT_MAX_COOLANT_TEMP
+    target_room_temp = DEFAULT_TARGET_ROOM_TEMP
+    heating_curve = DEFAULT_HEATING_CURVE
+    humidity_threshold = DEFAULT_HUMIDITY_THRESHOLD
 
     def __init__(self, hass, config_entry):
         """ Initialize the sensor. """
@@ -167,3 +169,42 @@ class WDASensor(SensorEntity):
             self._attr_available = False
             self._attr_native_value = None
             _LOGGER.error("Failed to update WDASensor: %s", e)
+
+
+class WDACurveSensor(Entity):
+    """ Sensor for calculating heating curve graph data. """
+
+    def __init__(self, hass, config_entry):
+        """Initialize the sensor."""
+        self._hass = hass
+        self._config = config_entry
+
+        self._attr_name = self._config.data.get("name", "Heating Curve Graph Data")
+        self._attr_unique_id = f"wda_sensor_curve_{config_entry.entry_id}"
+        self._attr_available = True
+        self._attr_icon = "mdi:chart-bell-curve-cumulative"
+
+    def get_config(self, key, default=None):
+        return get_config_value(self._config, key, default)
+
+    @property
+    def extra_state_attributes(self):
+        """ Return the state attributes. """
+        heating_curve = int(
+            self.get_config("wda_heating_curve", DEFAULT_HEATING_CURVE))
+        exp_min = int(self.get_config("wda_exp_min", DEFAULT_EXP_MIN))
+        exp_max = int(self.get_config("wda_exp_max", DEFAULT_EXP_MAX))
+        graph_data = self.generate_graph_data(heating_curve, exp_min, exp_max)
+        return {
+            "heating_curve": heating_curve,
+            "graph_data_map": graph_data,
+            "graph_data_items": list(graph_data.items())
+        }
+
+    def generate_graph_data(self, heating_curve, exp_min, exp_max):
+        # Range of outside temperature
+        outside_temps = list(range(GRAPH_MIN_OUTSIDE_TEMP, GRAPH_MAX_OUTSIDE_TEMP + 1))
+        return {
+            temp: round(calc_target(temp, heating_curve, exp_min, exp_max), 1)
+            for temp in outside_temps
+        }

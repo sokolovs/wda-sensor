@@ -17,12 +17,15 @@
                     "wda_inside_temp": "Inside Temperature Sensor (Optional)",
                     "wda_room_temp_correction": "Inside Temperature Correction Coefficient",
                     "wda_wind_correction": "Wind Correction Coefficient",
-                    "wda_humidity_correction": "Humidity Correction Coefficient"
+                    "wda_humidity_correction": "Humidity Correction Coefficient",
+                    "wda_exp_min": "Min. Exponent (curve shaping control)",
+                    "wda_exp_max": "Max. Exponent (curve shaping control)"
                 }
             }
         },
         "error": {
-            "invalid_sensor": "Selected sensor is not valid."
+            "exp_min_must_be_less": "The min. exponent must be less than the max. exponent.",
+            "wda_exp_min.exp_min_must_be_less": "The min. exponent must be less than the max. exponent."
         }
     },
     "options": {
@@ -42,9 +45,15 @@
                     "wda_inside_temp": "Inside Temperature Sensor (Optional)",
                     "wda_room_temp_correction": "Room Temperature Correction Coefficient",
                     "wda_wind_correction": "Wind Correction Coefficient",
-                    "wda_humidity_correction": "Humidity Correction Coefficient"
+                    "wda_humidity_correction": "Humidity Correction Coefficient",
+                    "wda_exp_min": "Min. Exponent (curve shaping control)",
+                    "wda_exp_max": "Max. Exponent (curve shaping control)"
                 }
             }
+        },
+        "error": {
+            "exp_min_must_be_less": "The min. exponent must be less than the max. exponent.",
+            "wda_exp_min.exp_min_must_be_less": "The min. exponent must be less than the max. exponent."
         }
     },
     "common": {
