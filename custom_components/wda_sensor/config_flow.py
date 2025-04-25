@@ -9,7 +9,7 @@ from homeassistant.helpers.translation import async_get_translations
 import voluptuous as vol
 
 from . import get_config_value
-from .const import DOMAIN, NOT_SELECTED_VALUE, SENSOR_UPDATE_SIGNAL
+from .const import *
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ async def get_translation(hass, key, default="Not found..."):
     return translations.get(key, default)
 
 
-async def create_schema(hass, config_entry=None):
+async def create_schema(hass, config_entry=None, user_input=None):
     """ Common schema for ConfigFlow and OptionsFlow."""
 
     sensors = {}
@@ -39,6 +39,8 @@ async def create_schema(hass, config_entry=None):
     sensors.update({s.entity_id: s.name for s in sorted_sensors})
 
     def get_config(key, default=None):
+        if user_input is not None:
+            return user_input.get(key, default)
         return get_config_value(config_entry, key, default)
 
     return vol.Schema({
@@ -47,23 +49,23 @@ async def create_schema(hass, config_entry=None):
         # Settings
         vol.Required(
             "wda_min_coolant_temp",
-            default=get_config("wda_min_coolant_temp", 40)): vol.All(
-                vol.Coerce(int), vol.Range(min=10, max=40)),
+            default=get_config("wda_min_coolant_temp", DEFAULT_MIN_COOLANT_TEMP)):
+                vol.All(vol.Coerce(int), vol.Range(min=10, max=40)),
 
         vol.Required(
             "wda_max_coolant_temp",
-            default=get_config("wda_max_coolant_temp", 80)): vol.All(
-                vol.Coerce(int), vol.Range(min=40, max=120)),
+            default=get_config("wda_max_coolant_temp", DEFAULT_MAX_COOLANT_TEMP)):
+                vol.All(vol.Coerce(int), vol.Range(min=40, max=120)),
 
         vol.Required(
             "wda_target_room_temp",
-            default=get_config("wda_target_room_temp", 21.5)): vol.All(
-                vol.Coerce(float), vol.Range(min=7, max=32)),
+            default=get_config("wda_target_room_temp", DEFAULT_TARGET_ROOM_TEMP)):
+                vol.All(vol.Coerce(float), vol.Range(min=5, max=30)),
 
         vol.Required(
             "wda_heating_curve",
-            default=get_config("wda_heating_curve", 60)): vol.All(
-                vol.Coerce(int), vol.Range(min=1, max=200)),
+            default=get_config("wda_heating_curve", DEFAULT_HEATING_CURVE)):
+                vol.All(vol.Coerce(int), vol.Range(min=1, max=200)),
 
         # Sensors
         vol.Required(
@@ -82,17 +84,39 @@ async def create_schema(hass, config_entry=None):
         # Corrections
         vol.Optional(
             "wda_room_temp_correction",
-            default=get_config("wda_room_temp_correction", 2.0)): vol.All(
-                vol.Coerce(float), vol.Range(min=0, max=10)),
+            default=get_config("wda_room_temp_correction", DEFAULT_ROOM_TEMP_CORRECTION)):
+                vol.All(vol.Coerce(float), vol.Range(min=0, max=10)),
         vol.Optional(
             "wda_wind_correction",
-            default=get_config("wda_wind_correction", 0.2)): vol.All(
-                vol.Coerce(float), vol.Range(min=0, max=1)),
+            default=get_config("wda_wind_correction", DEFAULT_WIND_CORRECTION)):
+                vol.All(vol.Coerce(float), vol.Range(min=0, max=1)),
         vol.Optional(
             "wda_humidity_correction",
-            default=get_config("wda_humidity_correction", 0.05)): vol.All(
-                vol.Coerce(float), vol.Range(min=0, max=0.2))
+            default=get_config("wda_humidity_correction", DEFAULT_HUMIDITY_CORRECTION)):
+                vol.All(vol.Coerce(float), vol.Range(min=0, max=0.2)),
+
+        # Exponent
+        vol.Optional(
+            "wda_exp_min",
+            default=get_config("wda_exp_min", DEFAULT_EXP_MIN)):
+                vol.All(vol.Coerce(float), vol.Range(min=0, max=4.0)),
+        vol.Optional(
+            "wda_exp_max",
+            default=get_config("wda_exp_max", DEFAULT_EXP_MAX)):
+                vol.All(vol.Coerce(float), vol.Range(min=0, max=4.0)),
     })
+
+
+def check_user_input(user_input):
+    errors = {}
+    if user_input is not None:
+        exp_min = user_input["wda_exp_min"]
+        exp_max = user_input["wda_exp_max"]
+
+        if exp_min > exp_max:
+            errors["base"] = "exp_min_must_be_less"
+            errors["wda_exp_min"] = "exp_min_must_be_less"
+    return errors
 
 
 class WDASensorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -105,11 +129,16 @@ class WDASensorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         _LOGGER.warning("Request to create config: %s", user_input)
 
         errors = {}
-
         if user_input is not None:
-            return self.async_create_entry(title=user_input["name"], data=user_input)
+            errors = check_user_input(user_input)
+            if not errors:
+                return self.async_create_entry(
+                    title=user_input["name"],
+                    data=user_input)
 
-        schema = await create_schema(hass=self.hass)
+        schema = await create_schema(
+            hass=self.hass,
+            user_input=user_input)
         return self.async_show_form(
             step_id="user",
             data_schema=schema,
@@ -133,24 +162,31 @@ class WDASensorOptionsFlow(config_entries.OptionsFlow):
         _LOGGER.warning("Request to update options: %s", user_input)
 
         errors = {}
-
         if user_input is not None:
-            for key in ["wda_inside_temp", "wda_wind_speed", "wda_outside_humidity"]:
-                input_value = user_input.get(key)
-                if input_value == NOT_SELECTED_VALUE:
-                    user_input[key] = None
+            errors = check_user_input(user_input)
 
-            # Update configuration
-            self.hass.config_entries.async_update_entry(self.config_entry, options=user_input)
+            if not errors:
+                for key in [
+                        "wda_inside_temp",
+                        "wda_wind_speed",
+                        "wda_outside_humidity"]:
+                    input_value = user_input.get(key)
+                    if input_value == NOT_SELECTED_VALUE:
+                        user_input[key] = None
 
-            # Send signal to subscribers
-            async_dispatcher_send(self.hass, SENSOR_UPDATE_SIGNAL)
+                # Update configuration
+                self.hass.config_entries.async_update_entry(
+                    self.config_entry, options=user_input)
 
-            return self.async_create_entry(title="", data=user_input)
+                # Send signal to subscribers
+                async_dispatcher_send(self.hass, SENSOR_UPDATE_SIGNAL)
+
+                return self.async_create_entry(title="", data=user_input)
 
         schema = await create_schema(
             hass=self.hass,
-            config_entry=self.config_entry
+            config_entry=self.config_entry,
+            user_input=user_input
         )
         return self.async_show_form(
             step_id="init",
