@@ -192,8 +192,8 @@ class WDACurveSensor(Entity):
         """ Return the state attributes. """
         heating_curve = int(
             self.get_config("wda_heating_curve", DEFAULT_HEATING_CURVE))
-        exp_min = int(self.get_config("wda_exp_min", DEFAULT_EXP_MIN))
-        exp_max = int(self.get_config("wda_exp_max", DEFAULT_EXP_MAX))
+        exp_min = float(self.get_config("wda_exp_min", DEFAULT_EXP_MIN))
+        exp_max = float(self.get_config("wda_exp_max", DEFAULT_EXP_MAX))
         graph_data = self.generate_graph_data(heating_curve, exp_min, exp_max)
         return {
             "heating_curve": heating_curve,
