@@ -119,6 +119,10 @@ class WDASensor(SensorEntity):
             wind_correction = float(self.get_config("wda_wind_correction", 0))
             humidity_correction = float(self.get_config("wda_humidity_correction", 0))
 
+            # Exponent range
+            exp_min = float(self.get_config("wda_exp_min", DEFAULT_EXP_MIN))
+            exp_max = float(self.get_config("wda_exp_max", DEFAULT_EXP_MAX))
+
             # Get data from sensors
             outside_temp = await self.async_get_sensor_value(self.get_config("wda_outside_temp"))
             if outside_temp is None:
@@ -137,7 +141,7 @@ class WDASensor(SensorEntity):
                 self.get_config("wda_inside_temp"))
 
             # Base value
-            target_heat_temp = calc_target(outside_temp, heating_curve)
+            target_heat_temp = calc_target(outside_temp, heating_curve, exp_min, exp_max)
 
             # Room Temperature Correction
             if room_temp_correction and inside_temp is not None:
