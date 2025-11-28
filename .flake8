@@ -1,0 +1,6 @@
+[flake8]
+max_line_length = 119
+max_complexity = 15
+extend_ignore = F405
+exclude =
+    __pycache__

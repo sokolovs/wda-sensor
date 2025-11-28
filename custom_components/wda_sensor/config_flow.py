@@ -9,7 +9,7 @@ from homeassistant.helpers.translation import async_get_translations
 import voluptuous as vol
 
 from . import get_config_value
-from .const import *
+from .const import *  # noqa F403
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -67,6 +67,12 @@ async def create_schema(hass, config_entry=None, user_input=None):
             default=get_config("wda_heating_curve", DEFAULT_HEATING_CURVE)):
                 vol.All(vol.Coerce(int), vol.Range(min=1, max=200)),
 
+        # Update interval (periodic sensor only)
+        vol.Required(
+            "wda_update_interval",
+            default=get_config("wda_update_interval", DEFAULT_UPDATE_INTERVAL)):
+                vol.All(vol.Coerce(int), vol.In(UPDATE_INTERVAL_CHOICES)),
+
         # Sensors
         vol.Required(
             "wda_outside_temp",
@@ -93,7 +99,7 @@ async def create_schema(hass, config_entry=None, user_input=None):
         vol.Optional(
             "wda_humidity_correction",
             default=get_config("wda_humidity_correction", DEFAULT_HUMIDITY_CORRECTION)):
-                vol.All(vol.Coerce(float), vol.Range(min=0, max=0.2)),
+                vol.All(vol.Coerce(float), vol.Range(min=0, max=0.4)),
 
         # Exponent
         vol.Optional(
@@ -104,6 +110,7 @@ async def create_schema(hass, config_entry=None, user_input=None):
             "wda_exp_max",
             default=get_config("wda_exp_max", DEFAULT_EXP_MAX)):
                 vol.All(vol.Coerce(float), vol.Range(min=0, max=4.0)),
+
     })
 
 
@@ -126,7 +133,7 @@ class WDASensorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """ Handle the initial step. """
-        _LOGGER.warning("Request to create config: %s", user_input)
+        _LOGGER.debug("Request to create config: %s", user_input)
 
         errors = {}
         if user_input is not None:
@@ -159,7 +166,7 @@ class WDASensorOptionsFlow(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input=None):
         """ Manage the options. """
-        _LOGGER.warning("Request to update options: %s", user_input)
+        _LOGGER.debug("Request to update options: %s", user_input)
 
         errors = {}
         if user_input is not None:

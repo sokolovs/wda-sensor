@@ -8,7 +8,7 @@ from homeassistant.helpers.event import async_track_state_change_event
 
 from . import get_config_value
 from .calc import calc_target
-from .const import *
+from .const import *  # noqa F403
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ class WDASensor(SensorEntity):
 
     async def handle_sensor_update(self, event):
         """ Handle options update. """
-        _LOGGER.warning(
+        _LOGGER.info(
             "Sensor state change detected: %s, updating sensor: %s",
             (event.data.get("entity_id"), self.name))
         await self.async_update()
@@ -80,7 +80,7 @@ class WDASensor(SensorEntity):
 
     async def handle_options_update(self):
         """ Handle sensors update. """
-        _LOGGER.warning("Configuration updated, updating sensor: %s", self.name)
+        _LOGGER.info("Configuration updated, updating sensor: %s", self.name)
         await self.async_update()
         self.async_write_ha_state()
 

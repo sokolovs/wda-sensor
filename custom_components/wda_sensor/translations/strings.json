@@ -19,7 +19,14 @@
                     "wda_wind_correction": "Wind Correction Coefficient",
                     "wda_humidity_correction": "Humidity Correction Coefficient",
                     "wda_exp_min": "Min. Exponent (curve shaping control)",
-                    "wda_exp_max": "Max. Exponent (curve shaping control)"
+                    "wda_exp_max": "Max. Exponent (curve shaping control)",
+                    "wda_update_interval": "Update interval"
+                },
+                "data_description": {
+                    "wda_room_temp_correction": "For every 1°C difference between the desired and actual indoor temperature, the heating system temperature is adjusted by this value.",
+                    "wda_wind_correction": "For every 1 m/s wind speed, the heating system temperature is increased by this value.",
+                    "wda_humidity_correction": "For every 1% humidity above 50%, the heating system temperature is increased by this value",
+                    "wda_update_interval": "Used for a separate sensor that is updated periodically to reduce the frequency of change the target coolant temperature to your equipment."
                 }
             }
         },
@@ -47,7 +54,14 @@
                     "wda_wind_correction": "Wind Correction Coefficient",
                     "wda_humidity_correction": "Humidity Correction Coefficient",
                     "wda_exp_min": "Min. Exponent (curve shaping control)",
-                    "wda_exp_max": "Max. Exponent (curve shaping control)"
+                    "wda_exp_max": "Max. Exponent (curve shaping control)",
+                    "wda_update_interval": "Update interval"
+                },
+                "data_description": {
+                    "wda_room_temp_correction": "For every 1°C difference between the desired and actual indoor temperature, the heating system temperature is adjusted by this value.",
+                    "wda_wind_correction": "For every 1 m/s wind speed, the heating system temperature is increased by this value.",
+                    "wda_humidity_correction": "For every 1% humidity above 50%, the heating system temperature is increased by this value",
+                    "wda_update_interval": "Used for a separate sensor that is updated periodically to reduce the frequency of change the target coolant temperature to your equipment."
                 }
             }
         },

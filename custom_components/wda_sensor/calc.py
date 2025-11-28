@@ -1,5 +1,6 @@
 from .const import DEFAULT_EXP_MAX, DEFAULT_EXP_MIN
 
+
 def calc_target(
         outside_temp: float,
         heating_curve: int,
@@ -19,11 +20,11 @@ def calc_target(
     exponent = exp_min + normalized_hc * (exp_max - exp_min)
 
     # The maximum temperature of the coolant — from 20 to 150°C
-    A = 20 + (150 - 20) * normalized_hc
+    a = 20 + (150 - 20) * normalized_hc
 
     # Temperature factor
     temp_factor = (20 - outside_temp) / 45
 
     # Target temperature of the coolant
-    target = A * (1 - (1 - temp_factor) ** exponent)
+    target = a * (1 - (1 - temp_factor) ** exponent)
     return target

@@ -20,3 +20,15 @@ DEFAULT_EXP_MAX = 2.2
 # Graph sensor X range
 GRAPH_MIN_OUTSIDE_TEMP = -25
 GRAPH_MAX_OUTSIDE_TEMP = 20
+
+# Update interval (seconds)
+DEFAULT_UPDATE_INTERVAL = 3600
+UPDATE_INTERVAL_CHOICES = {
+    300: "5m",
+    600: "10m",
+    900: "15m",
+    1200: "20m",
+    1800: "30m",
+    3600: "1h",
+    7200: "2h"
+}
