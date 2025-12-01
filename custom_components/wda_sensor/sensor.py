@@ -4,7 +4,6 @@ from datetime import timedelta
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, UnitOfTemperature
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -159,8 +158,8 @@ class WDAPeriodicSensor(CoordinatorEntity, SensorEntity):
         await self.coordinator.async_refresh()
 
     async def handle_ha_started(self, event):
-         _LOGGER.info(f"HA started, updating sensor: {self.name}")
-         await self.coordinator.async_refresh()
+        _LOGGER.info(f"HA started, updating sensor: {self.name}")
+        await self.coordinator.async_refresh()
 
     @property
     def native_value(self):
