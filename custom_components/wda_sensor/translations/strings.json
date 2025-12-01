@@ -72,5 +72,12 @@
     },
     "common": {
         "not_selected": "Not selected..."
+    },
+    "entity": {
+        "sensor": {
+            "wda_sensor": {"name": "Target Coolant Temperature"},
+            "wda_periodic_sensor": {"name": "Target Coolant Temperature (periodic)"},
+            "wda_sensor_graph_data": {"name": "Graph Data"}
+        }
     }
 }

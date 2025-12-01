@@ -72,5 +72,12 @@
     },
     "common": {
         "not_selected": "Не выбрано..."
+    },
+    "entity": {
+        "sensor": {
+            "wda_sensor": {"name": "Целевая Т. теплоносителя"},
+            "wda_periodic_sensor": {"name": "Целевая Т. теплоносителя (периодический)"},
+            "wda_sensor_graph_data": {"name": "Данные для построения кривой"}
+        }
     }
 }

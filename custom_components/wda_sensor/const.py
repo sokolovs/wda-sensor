@@ -1,3 +1,9 @@
+from awesomeversion import AwesomeVersion
+
+from homeassistant.const import __version__ as HAVERSION  # noqa: N812
+
+HA_VERSION = AwesomeVersion(HAVERSION)
+
 # WDA domain
 DOMAIN = "wda_sensor"
 SENSOR_UPDATE_SIGNAL = "WDA_SENSOR_OPTIONS_UPDATED"

@@ -8,8 +8,8 @@ from homeassistant.helpers.translation import async_get_translations
 
 import voluptuous as vol
 
-from . import get_config_value
 from .const import *  # noqa F403
+from .helpers import get_config_value
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -133,7 +133,7 @@ class WDASensorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """ Handle the initial step. """
-        _LOGGER.debug("Request to create config: %s", user_input)
+        _LOGGER.debug(f"Request to create config: {user_input}")
 
         errors = {}
         if user_input is not None:
@@ -162,11 +162,12 @@ class WDASensorOptionsFlow(config_entries.OptionsFlow):
     """ Handle options flow. """
 
     def __init__(self, config_entry):
-        self.config_entry = config_entry
+        if HA_VERSION < '2024.12':
+            self.config_entry = config_entry
 
     async def async_step_init(self, user_input=None):
         """ Manage the options. """
-        _LOGGER.debug("Request to update options: %s", user_input)
+        _LOGGER.debug(f"Request to update options: {user_input}")
 
         errors = {}
         if user_input is not None:
