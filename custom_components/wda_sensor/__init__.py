@@ -3,19 +3,18 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
-
-def get_config_value(config_entry, key, default=None):
-    if config_entry:
-        # Value priority: options > data > default
-        if key in config_entry.options:
-            return config_entry.options.get(key)
-        if key in config_entry.data:
-            return config_entry.data.get(key)
-    return default
+from .const import DOMAIN
+from .coordinator import WDAUpdateCoordinator
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """ Set up sensor from a config entry. """
+    hass.data.setdefault(DOMAIN, {})
+    coordinator = WDAUpdateCoordinator(hass, config_entry)
+    hass.data[DOMAIN][config_entry.entry_id] = {
+        "coordinator": coordinator
+    }
+    await coordinator.async_config_entry_first_refresh()
     await hass.config_entries.async_forward_entry_setups(config_entry, [Platform.SENSOR])
     return True
 
