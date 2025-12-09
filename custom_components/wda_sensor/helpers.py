@@ -21,7 +21,9 @@ def calc_target(
         outside_temp: float,
         heating_curve: int,
         exp_min: float = DEFAULT_EXP_MIN,
-        exp_max: float = DEFAULT_EXP_MAX) -> float:
+        exp_max: float = DEFAULT_EXP_MAX,
+        outside_temp_min: int = DEFAULT_MIN_OUTSIDE_TEMP,
+        outside_temp_max: int = DEFAULT_MAX_OUTSIDE_TEMP) -> float:
     """
     Calculation of the target temperature of the coolant based on the outside
     temperature and the heating curve number
@@ -39,7 +41,9 @@ def calc_target(
     a = 20 + (150 - 20) * normalized_hc
 
     # Temperature factor
-    temp_factor = (20 - outside_temp) / 45
+    denominator = outside_temp_max - outside_temp_min
+    temp_factor = (outside_temp_max - outside_temp) / denominator
+    temp_factor = 1 if temp_factor > 1 else temp_factor
 
     # Target temperature of the coolant
     target = a * (1 - (1 - temp_factor) ** exponent)

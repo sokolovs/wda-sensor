@@ -105,11 +105,11 @@ async def create_schema(hass, config_entry=None, user_input=None):
         vol.Optional(
             "wda_exp_min",
             default=get_config("wda_exp_min", DEFAULT_EXP_MIN)):
-                vol.All(vol.Coerce(float), vol.Range(min=0, max=4.0)),
+                vol.All(vol.Coerce(float), vol.Range(min=0, max=20.0)),
         vol.Optional(
             "wda_exp_max",
             default=get_config("wda_exp_max", DEFAULT_EXP_MAX)):
-                vol.All(vol.Coerce(float), vol.Range(min=0, max=4.0)),
+                vol.All(vol.Coerce(float), vol.Range(min=0, max=20.0)),
 
     })
 
