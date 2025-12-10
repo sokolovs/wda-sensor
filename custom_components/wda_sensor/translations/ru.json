@@ -31,8 +31,10 @@
             }
         },
         "error": {
-            "exp_min_must_be_less": "Некорректный диапазон значения экспоненты (min > max)",
-            "wda_exp_min.exp_min_must_be_less": "Некорректный диапазон значения экспоненты (min > max)"
+            "min_coolant_temp_must_be_less": "Некорректный диапазон значений температуры теплоносителя (min > max)",
+            "wda_min_coolant_temp.min_coolant_temp_must_be_less": "Некорректный диапазон значений температуры теплоносителя (min > max)",
+            "exp_min_must_be_less": "Некорректный диапазон значений экспоненты (min > max)",
+            "wda_exp_min.exp_min_must_be_less": "Некорректный диапазон значений экспоненты (min > max)"
         }
     },
     "options": {
@@ -66,8 +68,10 @@
             }
         },
         "error": {
-            "exp_min_must_be_less": "Некорректный диапазон значения экспоненты (min > max)",
-            "wda_exp_min.exp_min_must_be_less": "Некорректный диапазон значения экспоненты (min > max)"
+            "min_coolant_temp_must_be_less": "Некорректный диапазон значений температуры теплоносителя (min > max)",
+            "wda_min_coolant_temp.min_coolant_temp_must_be_less": "Некорректный диапазон значений температуры теплоносителя (min > max)",
+            "exp_min_must_be_less": "Некорректный диапазон значений экспоненты (min > max)",
+            "wda_exp_min.exp_min_must_be_less": "Некорректный диапазон значенйя экспоненты (min > max)"
         }
     },
     "common": {
