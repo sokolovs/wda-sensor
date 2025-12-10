@@ -50,12 +50,12 @@ async def create_schema(hass, config_entry=None, user_input=None):
         vol.Required(
             "wda_min_coolant_temp",
             default=get_config("wda_min_coolant_temp", DEFAULT_MIN_COOLANT_TEMP)):
-                vol.All(vol.Coerce(int), vol.Range(min=10, max=40)),
+                vol.All(vol.Coerce(int), vol.Range(min=10, max=50)),
 
         vol.Required(
             "wda_max_coolant_temp",
             default=get_config("wda_max_coolant_temp", DEFAULT_MAX_COOLANT_TEMP)):
-                vol.All(vol.Coerce(int), vol.Range(min=40, max=120)),
+                vol.All(vol.Coerce(int), vol.Range(min=20, max=150)),
 
         vol.Required(
             "wda_target_room_temp",
@@ -117,12 +117,18 @@ async def create_schema(hass, config_entry=None, user_input=None):
 def check_user_input(user_input):
     errors = {}
     if user_input is not None:
+        min_coolant_temp = user_input["wda_min_coolant_temp"]
+        max_coolant_temp = user_input["wda_max_coolant_temp"]
         exp_min = user_input["wda_exp_min"]
         exp_max = user_input["wda_exp_max"]
 
         if exp_min > exp_max:
             errors["base"] = "exp_min_must_be_less"
             errors["wda_exp_min"] = "exp_min_must_be_less"
+
+        if min_coolant_temp > max_coolant_temp:
+            errors["base"] = "min_coolant_temp_must_be_less"
+            errors["wda_min_coolant_temp"] = "min_coolant_temp_must_be_less"
     return errors
 
 
