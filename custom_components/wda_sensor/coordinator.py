@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DEFAULT_UPDATE_INTERVAL, DOMAIN
+from .const import DEFAULT_UPDATE_INTERVAL, DOMAIN, OPT_WDA_UPDATE_INTERVAL
 from .helpers import get_config_value, update
 
 _LOGGER = logging.getLogger(__name__)
@@ -17,13 +17,13 @@ class WDAUpdateCoordinator(DataUpdateCoordinator):
         self.config_entry = config_entry
 
         update_interval = get_config_value(
-            config_entry, "wda_update_interval", DEFAULT_UPDATE_INTERVAL)
+            config_entry, OPT_WDA_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
 
         super().__init__(
             hass,
             _LOGGER,
             name=DOMAIN,
-            update_interval=timedelta(seconds=update_interval))
+            update_interval=timedelta(seconds=int(update_interval)))
 
     async def _async_update_data(self):
         result = None

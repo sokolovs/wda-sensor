@@ -8,12 +8,11 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def get_config_value(config_entry, key, default=None):
+    # Value priority: options > data > default
     if config_entry:
-        # Value priority: options > data > default
-        if key in config_entry.options:
-            return config_entry.options.get(key)
-        if key in config_entry.data:
-            return config_entry.data.get(key)
+        config = config_entry.options or config_entry.data
+        if key in config:
+            return config.get(key)
     return default
 
 
@@ -75,35 +74,35 @@ async def update(hass, config):
 
     # Get data from settings
     min_coolant_temp = int(
-        get_config_value(config, "wda_min_coolant_temp", DEFAULT_MIN_COOLANT_TEMP))
+        get_config_value(config, OPT_WDA_MIN_COOLANT_TEMP, DEFAULT_MIN_COOLANT_TEMP))
     max_coolant_temp = int(
-        get_config_value(config, "wda_max_coolant_temp", DEFAULT_MAX_COOLANT_TEMP))
+        get_config_value(config, OPT_WDA_MAX_COOLANT_TEMP, DEFAULT_MAX_COOLANT_TEMP))
     target_room_temp = float(
-        get_config_value(config, "wda_target_room_temp", DEFAULT_TARGET_ROOM_TEMP))
+        get_config_value(config, OPT_WDA_TARGET_ROOM_TEMP, DEFAULT_TARGET_ROOM_TEMP))
     heating_curve = int(
-        get_config_value(config, "wda_heating_curve", DEFAULT_HEATING_CURVE))
+        get_config_value(config, OPT_WDA_HEATING_CURVE, DEFAULT_HEATING_CURVE))
 
     # Correction settings
-    room_temp_correction = float(get_config_value(config, "wda_room_temp_correction", 0))
-    wind_correction = float(get_config_value(config, "wda_wind_correction", 0))
-    humidity_correction = float(get_config_value(config, "wda_humidity_correction", 0))
+    room_temp_correction = float(get_config_value(config, OPT_WDA_ROOM_TEMP_CORRECTION, 0))
+    wind_correction = float(get_config_value(config, OPT_WDA_WIND_CORRECTION, 0))
+    humidity_correction = float(get_config_value(config, OPT_WDA_HUMIDITY_CORRECTION, 0))
 
     # Exponent range
-    exp_min = float(get_config_value(config, "wda_exp_min", DEFAULT_EXP_MIN))
-    exp_max = float(get_config_value(config, "wda_exp_max", DEFAULT_EXP_MAX))
+    exp_min = float(get_config_value(config, OPT_WDA_EXP_MIN, DEFAULT_EXP_MIN))
+    exp_max = float(get_config_value(config, OPT_WDA_EXP_MAX, DEFAULT_EXP_MAX))
 
     # Get data from sensors
-    outside_temp = await get_sensor_value(hass, get_config_value(config, "wda_outside_temp"))
+    outside_temp = await get_sensor_value(hass, get_config_value(config, OPT_WDA_OUTSIDE_TEMP))
     if outside_temp is None:
         return
 
     outside_temp = float(outside_temp)
-    wind_speed = await get_sensor_value(
-        hass, get_config_value(config, "wda_wind_speed"))
-    outside_humidity = await get_sensor_value(
-        hass, get_config_value(config, "wda_outside_humidity"))
     inside_temp = await get_sensor_value(
-        hass, get_config_value(config, "wda_inside_temp"))
+        hass, get_config_value(config, OPT_WDA_INSIDE_TEMP))
+    wind_speed = await get_sensor_value(
+        hass, get_config_value(config, OPT_WDA_WIND_SPEED))
+    outside_humidity = await get_sensor_value(
+        hass, get_config_value(config, OPT_WDA_OUTSIDE_HUMIDITY))
 
     # Base value
     target_heat_temp = calc_target(outside_temp, heating_curve, exp_min, exp_max)

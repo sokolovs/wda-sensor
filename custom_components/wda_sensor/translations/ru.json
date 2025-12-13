@@ -74,9 +74,6 @@
             "wda_exp_min.exp_min_must_be_less": "Некорректный диапазон значенйя экспоненты (min > max)"
         }
     },
-    "common": {
-        "not_selected": "Не выбрано..."
-    },
     "entity": {
         "sensor": {
             "wda_sensor": {"name": "Целевая Т. теплоносителя"},
