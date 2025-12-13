@@ -74,9 +74,6 @@
             "wda_exp_min.exp_min_must_be_less": "The min. exponent must be less than the max. exponent."
         }
     },
-    "common": {
-        "not_selected": "Not selected..."
-    },
     "entity": {
         "sensor": {
             "wda_sensor": {"name": "Target Coolant Temperature"},

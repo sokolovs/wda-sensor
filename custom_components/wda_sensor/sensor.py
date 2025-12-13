@@ -58,10 +58,10 @@ class WDASensor(SensorEntity):
 
         # Subscribe to update sensors
         sensor_entities = [
-            get_config_value(self._config, "wda_outside_temp"),
-            get_config_value(self._config, "wda_inside_temp"),
-            get_config_value(self._config, "wda_wind_speed"),
-            get_config_value(self._config, "wda_outside_humidity"),
+            get_config_value(self._config, OPT_WDA_OUTSIDE_TEMP),
+            get_config_value(self._config, OPT_WDA_INSIDE_TEMP),
+            get_config_value(self._config, OPT_WDA_WIND_SPEED),
+            get_config_value(self._config, OPT_WDA_OUTSIDE_HUMIDITY),
         ]
 
         for entity_id in sensor_entities:
@@ -137,11 +137,9 @@ class WDAPeriodicSensor(CoordinatorEntity, SensorEntity):
         )
 
         # Subscribe to HA started
-        self.async_on_remove(
-            self._hass.bus.async_listen_once(
-                EVENT_HOMEASSISTANT_STARTED,
-                self.handle_ha_started
-            )
+        self._hass.bus.async_listen_once(
+            EVENT_HOMEASSISTANT_STARTED,
+            self.handle_ha_started
         )
 
     async def handle_options_update(self):
@@ -149,8 +147,8 @@ class WDAPeriodicSensor(CoordinatorEntity, SensorEntity):
         _LOGGER.info(f"Configuration updated, updating sensor: {self.name}")
 
         # We have new update interval for coordinator
-        update_interval = timedelta(seconds=get_config_value(
-            self._config, "wda_update_interval", DEFAULT_UPDATE_INTERVAL))
+        update_interval = timedelta(seconds=int(get_config_value(
+            self._config, OPT_WDA_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)))
         if self.coordinator.update_interval != update_interval:
             self.coordinator.update_interval = update_interval
 
@@ -186,15 +184,15 @@ class WDACurveSensor(SensorEntity):
     def native_value(self):
         """Return the state of the sensor."""
         return int(
-            get_config_value(self._config, "wda_heating_curve", DEFAULT_HEATING_CURVE))
+            get_config_value(self._config, OPT_WDA_HEATING_CURVE, DEFAULT_HEATING_CURVE))
 
     @property
     def extra_state_attributes(self):
         """ Return the state attributes. """
         heating_curve = int(
-            get_config_value(self._config, "wda_heating_curve", DEFAULT_HEATING_CURVE))
-        exp_min = float(get_config_value(self._config, "wda_exp_min", DEFAULT_EXP_MIN))
-        exp_max = float(get_config_value(self._config, "wda_exp_max", DEFAULT_EXP_MAX))
+            get_config_value(self._config, OPT_WDA_HEATING_CURVE, DEFAULT_HEATING_CURVE))
+        exp_min = float(get_config_value(self._config, OPT_WDA_EXP_MIN, DEFAULT_EXP_MIN))
+        exp_max = float(get_config_value(self._config, OPT_WDA_EXP_MAX, DEFAULT_EXP_MAX))
         graph_data = self.generate_graph_data(heating_curve, exp_min, exp_max)
         return {
             "heating_curve": heating_curve,
