@@ -93,9 +93,9 @@ class WDASensor(SensorEntity):
             if result is None:
                 self._attr_available = False
                 self._attr_native_value = None
-                _LOGGER.warning(
+                _LOGGER.debug(
                     f"Failed to update {self.name}: "
-                    f"outside temperature sensor is not configured now")
+                    f"outside temperature sensor is not available now")
                 return
 
             self._attr_available = True
