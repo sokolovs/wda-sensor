@@ -69,7 +69,7 @@ async def get_sensor_value(hass, entity_id, default=None):
 async def update(hass, config):
     """
     Return calculated sensor value for update.
-    Return None if `wda_outside_temp` sensor is not configured
+    Return None if `wda_outside_temp` sensor is not available
     """
 
     # Get data from settings

@@ -32,9 +32,9 @@ class WDAUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.debug(f"Data received for sensor update: {result}")
 
             if result is None:
-                _LOGGER.warning(
+                _LOGGER.debug(
                     f"Failed to update {self.__class__.__name__}: "
-                    f"outside temperature sensor is not configured now")
+                    f"outside temperature sensor is not available now")
         except Exception as e:
             raise UpdateFailed(f"Exception while sensor update: {e}")
 
