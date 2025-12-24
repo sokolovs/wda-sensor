@@ -135,7 +135,7 @@ class WDASensorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors = check_user_input(user_input)
             if not errors:
                 return self.async_create_entry(
-                    title=user_input["name"],
+                    title=user_input[OPT_NAME],
                     data=user_input)
 
         schema = await create_schema(
@@ -143,7 +143,7 @@ class WDASensorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             user_input=user_input)
         return self.async_show_form(
             step_id="user",
-            data_schema=schema,
+            data_schema=self.add_suggested_values_to_schema(schema, user_input or {}),
             errors=errors
         )
 
@@ -184,7 +184,7 @@ class WDASensorOptionsFlow(config_entries.OptionsFlow):
             user_input=user_input
         )
 
-        options = self.config_entry.options or self.config_entry.data
+        options = user_input or self.config_entry.options or self.config_entry.data or {}
         return self.async_show_form(
             step_id="init",
             data_schema=self.add_suggested_values_to_schema(schema, options),
