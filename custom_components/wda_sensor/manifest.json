@@ -1,6 +1,6 @@
 {
     "domain": "wda_sensor",
-    "name": "WDA Sensor",
+    "name": "Weather-Based Heating Sensor",
     "codeowners": ["@sokolovs"],
     "config_flow": true,
     "dependencies": [],
