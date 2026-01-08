@@ -1,9 +1,9 @@
 {
-    "title": "Weather Based Heating Sensor",
+    "title": "Weather-Based Heating Sensor",
     "config": {
         "step": {
             "user": {
-                "title": "Configure Weather Based Heating Sensor",
+                "title": "Configure Weather-Based Heating Sensor",
                 "description": "Select sensors for calculating the target heat carrier temperature.",
                 "data": {
                     "name": "Sensor Name",
@@ -40,8 +40,8 @@
     "options": {
         "step": {
             "init": {
-                "title": "Update Weather Based Heating Sensor Settings",
-                "description": "Modify the settings of the Weather Based Heating Sensor.",
+                "title": "Update Weather-Based Heating Sensor Settings",
+                "description": "Modify the settings of the Weather-Based Heating Sensor.",
                 "data": {
                     "name": "Sensor Name",
                     "wda_min_coolant_temp": "Min Coolant Temperature",
