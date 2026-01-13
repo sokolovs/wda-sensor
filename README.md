@@ -44,7 +44,7 @@
 
 ---
 
-# 🔥 EN: Weather Dependent Automation Sensor for Home Assistant
+# 🔥 EN: Weather Driven Heating Control for Home Assistant
 
 This integration allows you to create a sensor that calculates the required **heating system temperature** based on the **heating curve number** (from 1 to 200) and an **outdoor temperature sensor**. The calculated temperature can be used to control your heating boiler.
 
