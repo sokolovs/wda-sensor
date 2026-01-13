@@ -1,6 +1,6 @@
 {
     "domain": "wda_sensor",
-    "name": "Weather-Based Heating Sensor",
+    "name": "Weather Driven Heating Control",
     "codeowners": ["@sokolovs"],
     "config_flow": true,
     "dependencies": [],
@@ -8,5 +8,5 @@
     "iot_class": "local_polling",
     "issue_tracker": "https://github.com/sokolovs/wda-sensor/issues",
     "requirements": [],
-    "version": "1.1.7"
+    "version": "1.1.8"
 }
