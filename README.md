@@ -7,7 +7,7 @@
 - Создание **нескольких независимых сенсоров**, каждый со своими настройками.
 - Настройка **формы отопительной кривой** с помощью подстройки диапазона экспоненты.
 - Изменение параметров сенсора **в любой момент** без перезапуска Home Assistant.
-- Дополнительный сенсор, который позволит **построить вашу отопительную кривую** и разместить её на дашборт.
+- Дополнительный сенсор, который позволит **построить вашу отопительную кривую** и [разместить её на дашборт](https://github.com/sokolovs/wda-sensor/wiki/Adding-a-curve-to-the-dashboard).
 - Дополнительный сенсор, который **обновляется с заданным интервалом**, вместо немедленного обновления.
 
 ## 📌 Дополнительные настройки (опционально)
@@ -53,7 +53,7 @@ This integration allows you to create a sensor that calculates the required **he
 - Create **multiple independent sensors**, each with its own settings.
 - Customize the **heating curve shape** by adjusting the exponent range for more precise control.
 - Adjust sensor parameters **at any time** without restarting Home Assistant.
-- An additional sensor that will allow **building your heating curve** and placing it on the dashboard.
+- An additional sensor that will allow **building your heating curve** and [placing it on the dashboard](https://github.com/sokolovs/wda-sensor/wiki/Adding-a-curve-to-the-dashboard).
 - An additional sensor that **updates at a set interval** instead of updating immediately.
 
 ## 📌 Additional Factors (Optional)

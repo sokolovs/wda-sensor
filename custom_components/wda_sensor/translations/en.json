@@ -1,16 +1,16 @@
 {
-    "title": "Weather-Based Heating Sensor",
+    "title": "Weather Driven Heating Control",
     "config": {
         "step": {
             "user": {
-                "title": "Configure Weather-Based Heating Sensor",
+                "title": "Configure Weather Driven Heating Control",
                 "description": "Select sensors for calculating the target heat carrier temperature.",
                 "data": {
                     "name": "Sensor Name",
-                    "wda_min_coolant_temp": "Min Coolant Temperature",
-                    "wda_max_coolant_temp": "Max Coolant Temperature",
-                    "wda_target_room_temp": "Target Room Temperature Sensor",
-                    "wda_heating_curve": "Heating Curve Sensor",
+                    "wda_min_coolant_temp": "Min Flow Temperature",
+                    "wda_max_coolant_temp": "Max Flow Temperature",
+                    "wda_target_room_temp": "Target Room Temperature",
+                    "wda_heating_curve": "Heating Curve",
                     "wda_outside_temp": "Outside Temperature Sensor",
                     "wda_wind_speed": "Wind Speed Sensor (Optional)",
                     "wda_outside_humidity": "Outside Humidity Sensor (Optional)",
@@ -26,13 +26,13 @@
                     "wda_room_temp_correction": "For every 1°C difference between the desired and actual indoor temperature, the heating system temperature is adjusted by this value.",
                     "wda_wind_correction": "For every 1 m/s wind speed, the heating system temperature is increased by this value.",
                     "wda_humidity_correction": "For every 1% humidity above 50%, the heating system temperature is increased by this value",
-                    "wda_update_interval": "Used for a separate sensor that is updated periodically to reduce the frequency of change the target coolant temperature to your equipment."
+                    "wda_update_interval": "Used for a separate sensor that is updated periodically to reduce the frequency of change the target flow temperature to your equipment."
                 }
             }
         },
         "error": {
-            "min_coolant_temp_must_be_less": "The min. coolant temperature must be less than max.",
-            "wda_min_coolant_temp.min_coolant_temp_must_be_less": "The min. coolant temperature must be less than max.",
+            "min_coolant_temp_must_be_less": "The min. flow temperature must be less than max.",
+            "wda_min_coolant_temp.min_coolant_temp_must_be_less": "The min. flow temperature must be less than max.",
             "exp_min_must_be_less": "The min. exponent must be less than the max. exponent.",
             "wda_exp_min.exp_min_must_be_less": "The min. exponent must be less than the max. exponent."
         }
@@ -40,14 +40,14 @@
     "options": {
         "step": {
             "init": {
-                "title": "Update Weather-Based Heating Sensor Settings",
-                "description": "Modify the settings of the Weather-Based Heating Sensor.",
+                "title": "Update Weather Driven Heating Control Settings",
+                "description": "Modify the settings of the Weather Driven Heating Control.",
                 "data": {
                     "name": "Sensor Name",
-                    "wda_min_coolant_temp": "Min Coolant Temperature",
-                    "wda_max_coolant_temp": "Max Coolant Temperature",
-                    "wda_target_room_temp": "Target Room Temperature Sensor",
-                    "wda_heating_curve": "Heating Curve Sensor",
+                    "wda_min_coolant_temp": "Min Flow Temperature",
+                    "wda_max_coolant_temp": "Max Flow Temperature",
+                    "wda_target_room_temp": "Target Room Temperature",
+                    "wda_heating_curve": "Heating Curve",
                     "wda_outside_temp": "Outside Temperature Sensor",
                     "wda_wind_speed": "Wind Speed Sensor (Optional)",
                     "wda_outside_humidity": "Outside Humidity Sensor (Optional)",
@@ -63,21 +63,21 @@
                     "wda_room_temp_correction": "For every 1°C difference between the desired and actual indoor temperature, the heating system temperature is adjusted by this value.",
                     "wda_wind_correction": "For every 1 m/s wind speed, the heating system temperature is increased by this value.",
                     "wda_humidity_correction": "For every 1% humidity above 50%, the heating system temperature is increased by this value",
-                    "wda_update_interval": "Used for a separate sensor that is updated periodically to reduce the frequency of change the target coolant temperature to your equipment."
+                    "wda_update_interval": "Used for a separate sensor that is updated periodically to reduce the frequency of change the target flow temperature to your equipment."
                 }
             }
         },
         "error": {
-            "min_coolant_temp_must_be_less": "The min. coolant temperature must be less than max.",
-            "wda_min_coolant_temp.min_coolant_temp_must_be_less": "The min. coolant temperature must be less than max.",
+            "min_coolant_temp_must_be_less": "The min. flow temperature must be less than max.",
+            "wda_min_coolant_temp.min_coolant_temp_must_be_less": "The min. flow temperature must be less than max.",
             "exp_min_must_be_less": "The min. exponent must be less than the max. exponent.",
             "wda_exp_min.exp_min_must_be_less": "The min. exponent must be less than the max. exponent."
         }
     },
     "entity": {
         "sensor": {
-            "wda_sensor": {"name": "Target Coolant Temperature"},
-            "wda_periodic_sensor": {"name": "Target Coolant Temperature (periodic)"},
+            "wda_sensor": {"name": "Target Flow Temperature"},
+            "wda_periodic_sensor": {"name": "Target Flow Temperature (periodic)"},
             "wda_sensor_graph_data": {"name": "Graph Data"}
         }
     }
