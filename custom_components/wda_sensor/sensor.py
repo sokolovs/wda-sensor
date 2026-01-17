@@ -2,12 +2,12 @@ import logging
 from datetime import timedelta
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, UnitOfTemperature
+from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, Platform, UnitOfTemperature
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .helpers import calc_target, get_config_value, update
+from .helpers import calc_target, get_config_value, get_entity_id, update
 from .const import *  # noqa F403
 
 _LOGGER = logging.getLogger(__name__)
@@ -56,21 +56,11 @@ class WDASensor(SensorEntity):
             )
         )
 
-        # Subscribe to update sensors
-        sensor_entities = [
-            get_config_value(self._config, OPT_WDA_OUTSIDE_TEMP),
-            get_config_value(self._config, OPT_WDA_INSIDE_TEMP),
-            get_config_value(self._config, OPT_WDA_WIND_SPEED),
-            get_config_value(self._config, OPT_WDA_OUTSIDE_HUMIDITY),
-        ]
-
-        for entity_id in sensor_entities:
-            if entity_id:
-                self.async_on_remove(
-                    async_track_state_change_event(
-                        self._hass, entity_id, self.handle_sensor_update
-                    )
-                )
+        # Subscribe to HA started
+        self._hass.bus.async_listen_once(
+            EVENT_HOMEASSISTANT_STARTED,
+            self.handle_ha_started
+        )
 
     async def handle_sensor_update(self, event):
         """ Handle sensors update. """
@@ -85,6 +75,41 @@ class WDASensor(SensorEntity):
         _LOGGER.info(f"Configuration updated, updating sensor: {self.name}")
         await self.async_update()
         self.async_write_ha_state()
+
+    async def handle_ha_started(self, event):
+        _LOGGER.info(f"HA started, subscribe to related entites for: {self.name}")
+
+        # Number inputs
+        target_room_temp_num = await get_entity_id(
+            hass=self._hass,
+            platform=Platform.NUMBER,
+            domain=DOMAIN,
+            unique_id=f"{OPT_WDA_TARGET_ROOM_TEMP}_{self._config.entry_id}"
+        )
+        heating_curve_num = await get_entity_id(
+            hass=self._hass,
+            platform=Platform.NUMBER,
+            domain=DOMAIN,
+            unique_id=f"{OPT_WDA_HEATING_CURVE}_{self._config.entry_id}"
+        )
+
+        # Subscribe to update sensors or number inputs
+        subscribe_to_entities = [
+            get_config_value(self._config, OPT_WDA_OUTSIDE_TEMP),
+            get_config_value(self._config, OPT_WDA_INSIDE_TEMP),
+            get_config_value(self._config, OPT_WDA_WIND_SPEED),
+            get_config_value(self._config, OPT_WDA_OUTSIDE_HUMIDITY),
+            target_room_temp_num,
+            heating_curve_num
+        ]
+
+        for entity_id in subscribe_to_entities:
+            if entity_id:
+                self.async_on_remove(
+                    async_track_state_change_event(
+                        self._hass, entity_id, self.handle_sensor_update
+                    )
+                )
 
     async def async_update(self):
         """ Fetch new state data for the sensor. """
@@ -142,6 +167,15 @@ class WDAPeriodicSensor(CoordinatorEntity, SensorEntity):
             self.handle_ha_started
         )
 
+    async def handle_sensor_update(self, event):
+        """ Handle sensors update. """
+        _LOGGER.info(
+            f"Sensor state change detected: {event.data.get('entity_id')}, "
+            f"updating sensor: {self.name}")
+
+        # Refresh data
+        await self.coordinator.async_refresh()
+
     async def handle_options_update(self):
         """ Handle options update. """
         _LOGGER.info(f"Configuration updated, updating sensor: {self.name}")
@@ -156,8 +190,35 @@ class WDAPeriodicSensor(CoordinatorEntity, SensorEntity):
         await self.coordinator.async_refresh()
 
     async def handle_ha_started(self, event):
-        _LOGGER.info(f"HA started, updating sensor: {self.name}")
+        _LOGGER.info(f"HA started, updating sensor and subscribe to related entities for: {self.name}")
+
+        # Refresh data
         await self.coordinator.async_refresh()
+
+        # Number inputs
+        target_room_temp_num = await get_entity_id(
+            hass=self._hass,
+            platform=Platform.NUMBER,
+            domain=DOMAIN,
+            unique_id=f"{OPT_WDA_TARGET_ROOM_TEMP}_{self._config.entry_id}"
+        )
+        heating_curve_num = await get_entity_id(
+            hass=self._hass,
+            platform=Platform.NUMBER,
+            domain=DOMAIN,
+            unique_id=f"{OPT_WDA_HEATING_CURVE}_{self._config.entry_id}"
+        )
+
+        # Subscribe to update number inputs
+        subscribe_to_entities = [target_room_temp_num, heating_curve_num]
+
+        for entity_id in subscribe_to_entities:
+            if entity_id:
+                self.async_on_remove(
+                    async_track_state_change_event(
+                        self._hass, entity_id, self.handle_sensor_update
+                    )
+                )
 
     @property
     def native_value(self):

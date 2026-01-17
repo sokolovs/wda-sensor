@@ -79,6 +79,10 @@
             "wda_sensor": {"name": "Целевая Т. теплоносителя"},
             "wda_periodic_sensor": {"name": "Целевая Т. теплоносителя (периодический)"},
             "wda_sensor_graph_data": {"name": "Данные для построения кривой"}
+        },
+        "number": {
+            "wda_heating_curve": {"name": "Номер отопительной кривой"},
+            "wda_target_room_temp": {"name": "Целевая температура в помещении"}
         }
     }
 }

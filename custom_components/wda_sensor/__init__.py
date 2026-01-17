@@ -15,7 +15,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         "coordinator": coordinator
     }
     await coordinator.async_config_entry_first_refresh()
-    await hass.config_entries.async_forward_entry_setups(config_entry, [Platform.SENSOR])
+    await hass.config_entries.async_forward_entry_setups(config_entry, [Platform.SENSOR, Platform.NUMBER])
     return True
 
 

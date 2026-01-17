@@ -1,6 +1,7 @@
 import logging
 
 from homeassistant.const import STATE_UNAVAILABLE, STATE_UNKNOWN
+from homeassistant.helpers import entity_registry
 
 from .const import *  # noqa F403
 
@@ -132,3 +133,10 @@ async def update(hass, config):
         target_heat_temp = max_coolant_temp
 
     return int(round(target_heat_temp))
+
+
+async def get_entity_id(hass, platform, domain, unique_id):
+    """ Return entity ID by unique ID """
+    reg = entity_registry.async_get(hass)
+    entity_id = reg.async_get_entity_id(platform, domain, unique_id)
+    return entity_id

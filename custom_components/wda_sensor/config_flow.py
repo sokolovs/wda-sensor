@@ -46,12 +46,18 @@ async def create_schema(hass, config_entry=None, user_input=None):
 
         vol.Required(OPT_WDA_TARGET_ROOM_TEMP, default=DEFAULT_TARGET_ROOM_TEMP):
             NumberSelector(NumberSelectorConfig(
-                min=5.0, max=30.0, step=0.1, mode=NumberSelectorMode.BOX,
+                min=MIN_TARGET_ROOT_TEMP,
+                max=MAX_TARGET_ROOT_TEMP,
+                step=TARGET_ROOT_TEMP_STEP,
+                mode=NumberSelectorMode.BOX,
                 unit_of_measurement=UnitOfTemperature.CELSIUS)),
 
         vol.Required(OPT_WDA_HEATING_CURVE, default=DEFAULT_HEATING_CURVE):
             NumberSelector(NumberSelectorConfig(
-                min=1, max=200, mode=NumberSelectorMode.BOX)),
+                min=MIN_HEATING_CURVE,
+                max=MAX_HEATING_CURVE,
+                step=HEATING_CURVE_STEP,
+                mode=NumberSelectorMode.BOX)),
 
         # Update interval (periodic sensor only)
         vol.Required(OPT_WDA_UPDATE_INTERVAL, default=str(DEFAULT_UPDATE_INTERVAL)):
