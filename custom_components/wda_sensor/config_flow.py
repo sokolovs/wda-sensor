@@ -27,9 +27,8 @@ from .const import *  # noqa F403
 _LOGGER = logging.getLogger(__name__)
 
 
-async def create_schema(hass, config_entry=None, user_input=None):
+async def create_schema(hass, config_entry=None, user_input=None, config_flow=True):
     """ Common schema for ConfigFlow and OptionsFlow."""
-
     return vol.Schema({
         vol.Required(OPT_NAME): TextSelector(TextSelectorConfig(type=TextSelectorType.TEXT)),
 
@@ -43,21 +42,6 @@ async def create_schema(hass, config_entry=None, user_input=None):
             NumberSelector(NumberSelectorConfig(
                 min=20, max=150, mode=NumberSelectorMode.BOX,
                 unit_of_measurement=UnitOfTemperature.CELSIUS)),
-
-        vol.Required(OPT_WDA_TARGET_ROOM_TEMP, default=DEFAULT_TARGET_ROOM_TEMP):
-            NumberSelector(NumberSelectorConfig(
-                min=MIN_TARGET_ROOT_TEMP,
-                max=MAX_TARGET_ROOT_TEMP,
-                step=TARGET_ROOT_TEMP_STEP,
-                mode=NumberSelectorMode.BOX,
-                unit_of_measurement=UnitOfTemperature.CELSIUS)),
-
-        vol.Required(OPT_WDA_HEATING_CURVE, default=DEFAULT_HEATING_CURVE):
-            NumberSelector(NumberSelectorConfig(
-                min=MIN_HEATING_CURVE,
-                max=MAX_HEATING_CURVE,
-                step=HEATING_CURVE_STEP,
-                mode=NumberSelectorMode.BOX)),
 
         # Update interval (periodic sensor only)
         vol.Required(OPT_WDA_UPDATE_INTERVAL, default=str(DEFAULT_UPDATE_INTERVAL)):
@@ -180,14 +164,15 @@ class WDASensorOptionsFlow(config_entries.OptionsFlow):
                     self.config_entry, options=user_input)
 
                 # Send signal to subscribers
-                async_dispatcher_send(self.hass, SENSOR_UPDATE_SIGNAL)
+                async_dispatcher_send(self.hass, f"{SENSOR_UPDATE_SIGNAL}_{self.config_entry.entry_id}")
 
                 return self.async_create_entry(title="", data=user_input)
 
         schema = await create_schema(
             hass=self.hass,
             config_entry=self.config_entry,
-            user_input=user_input
+            user_input=user_input,
+            config_flow=False
         )
 
         options = user_input or self.config_entry.options or self.config_entry.data or {}

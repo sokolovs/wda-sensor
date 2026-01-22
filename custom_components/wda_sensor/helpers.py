@@ -1,6 +1,6 @@
 import logging
 
-from homeassistant.const import STATE_UNAVAILABLE, STATE_UNKNOWN
+from homeassistant.const import Platform, STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.helpers import entity_registry
 
 from .const import *  # noqa F403
@@ -50,20 +50,38 @@ def calc_target(
     return target
 
 
-async def get_sensor_value(hass, entity_id, default=None):
+async def get_entity_id(hass, platform, unique_id):
+    """ Return entity ID by unique ID """
+    reg = entity_registry.async_get(hass)
+    entity_id = reg.async_get_entity_id(platform, DOMAIN, unique_id)
+    return entity_id
+
+
+async def get_sensor_value(hass, entity_id, default=None, coerce=float):
     """ Get current sensor value by `entity_id` """
     if not entity_id:
         return default
 
+    if not callable(coerce):
+        return default
+
     state = hass.states.get(entity_id)
-    if state is None or state.state in [STATE_UNKNOWN, STATE_UNAVAILABLE]:
+    if state is None or state.state in [STATE_UNKNOWN, STATE_UNAVAILABLE, None]:
         return default
 
     try:
-        return float(state.state)
+        return coerce(state.state)
     except ValueError:
-        _LOGGER.warning(f"Cannot convert state of {entity_id} to float: {state.state}")
+        _LOGGER.warning(f"Cannot convert state of {entity_id} to {coerce}: {state.state}")
 
+    return default
+
+
+async def get_sensor_value_by_uniq(hass, platform, unique_id, default=None, coerce=float):
+    """ Return value by uniq ID """
+    entity_id = await get_entity_id(hass, platform, unique_id)
+    if entity_id:
+        return await get_sensor_value(hass, entity_id, default, coerce)
     return default
 
 
@@ -78,10 +96,6 @@ async def update(hass, config):
         get_config_value(config, OPT_WDA_MIN_COOLANT_TEMP, DEFAULT_MIN_COOLANT_TEMP))
     max_coolant_temp = int(
         get_config_value(config, OPT_WDA_MAX_COOLANT_TEMP, DEFAULT_MAX_COOLANT_TEMP))
-    target_room_temp = float(
-        get_config_value(config, OPT_WDA_TARGET_ROOM_TEMP, DEFAULT_TARGET_ROOM_TEMP))
-    heating_curve = int(
-        get_config_value(config, OPT_WDA_HEATING_CURVE, DEFAULT_HEATING_CURVE))
 
     # Correction settings
     room_temp_correction = float(get_config_value(config, OPT_WDA_ROOM_TEMP_CORRECTION, 0))
@@ -91,6 +105,22 @@ async def update(hass, config):
     # Exponent range
     exp_min = float(get_config_value(config, OPT_WDA_EXP_MIN, DEFAULT_EXP_MIN))
     exp_max = float(get_config_value(config, OPT_WDA_EXP_MAX, DEFAULT_EXP_MAX))
+
+    # Get data from number inputs
+    target_room_temp = await get_sensor_value_by_uniq(
+        hass=hass,
+        platform=Platform.NUMBER,
+        unique_id=f"{OPT_WDA_TARGET_ROOM_TEMP}_{config.entry_id}"
+    )
+    heating_curve = await get_sensor_value_by_uniq(
+        hass=hass,
+        platform=Platform.NUMBER,
+        unique_id=f"{OPT_WDA_HEATING_CURVE}_{config.entry_id}",
+        coerce=int
+    )
+
+    if heating_curve is None:
+        return
 
     # Get data from sensors
     outside_temp = await get_sensor_value(hass, get_config_value(config, OPT_WDA_OUTSIDE_TEMP))
@@ -109,7 +139,7 @@ async def update(hass, config):
     target_heat_temp = calc_target(outside_temp, heating_curve, exp_min, exp_max)
 
     # Room Temperature Correction
-    if room_temp_correction and inside_temp is not None:
+    if room_temp_correction and inside_temp is not None and target_room_temp is not None:
         correction_value = (target_room_temp - float(inside_temp)) * room_temp_correction
         target_heat_temp = target_heat_temp + correction_value
 
@@ -133,10 +163,3 @@ async def update(hass, config):
         target_heat_temp = max_coolant_temp
 
     return int(round(target_heat_temp))
-
-
-async def get_entity_id(hass, platform, domain, unique_id):
-    """ Return entity ID by unique ID """
-    reg = entity_registry.async_get(hass)
-    entity_id = reg.async_get_entity_id(platform, domain, unique_id)
-    return entity_id
