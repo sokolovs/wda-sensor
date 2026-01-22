@@ -25,6 +25,16 @@ OPT_WDA_HUMIDITY_CORRECTION = "wda_humidity_correction"
 OPT_WDA_EXP_MIN = "wda_exp_min"
 OPT_WDA_EXP_MAX = "wda_exp_max"
 
+# Min/max heating curve number
+MIN_HEATING_CURVE = 1
+MAX_HEATING_CURVE = 200
+HEATING_CURVE_STEP = 1
+
+# Min/max target root temperatur
+MIN_TARGET_ROOT_TEMP = 5.0
+MAX_TARGET_ROOT_TEMP = 30.0
+TARGET_ROOT_TEMP_STEP = 0.1
+
 # Defaults
 DEFAULT_MIN_COOLANT_TEMP = 40
 DEFAULT_MAX_COOLANT_TEMP = 80

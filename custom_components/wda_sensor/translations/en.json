@@ -79,6 +79,10 @@
             "wda_sensor": {"name": "Target Flow Temperature"},
             "wda_periodic_sensor": {"name": "Target Flow Temperature (periodic)"},
             "wda_sensor_graph_data": {"name": "Graph Data"}
+        },
+        "number": {
+            "wda_heating_curve": {"name": "Heating Curve"},
+            "wda_target_room_temp": {"name": "Target Room Temperature"}
         }
     }
 }
