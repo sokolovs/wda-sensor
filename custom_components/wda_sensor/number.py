@@ -5,6 +5,7 @@ from homeassistant.const import STATE_UNAVAILABLE, STATE_UNKNOWN, UnitOfTemperat
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.restore_state import RestoreEntity
 
+from .helpers import get_config_value
 from .const import *  # noqa F403
 
 _LOGGER = logging.getLogger(__name__)
@@ -66,8 +67,12 @@ class WDANumber(NumberEntity, RestoreEntity):
 
         # Set default value for first time
         if last_state is None or last_state.state in [STATE_UNKNOWN, STATE_UNAVAILABLE, None]:
-            _LOGGER.info(f"Set default value for '{self._attr_translation_key}'")
-            await self.async_set_native_value(value=self._entity_config.get("default"))
+            _LOGGER.info(f"Set last config (or default) value for '{self._attr_translation_key}'")
+            await self.async_set_native_value(
+                value=get_config_value(
+                    self._config,
+                    self._name,
+                    default=self._entity_config.get("default")))
         # Restore last state
         else:
             _LOGGER.info(f"Restoring the last state for '{self._attr_translation_key}'")
