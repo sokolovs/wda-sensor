@@ -4,6 +4,7 @@ from homeassistant import config_entries
 from homeassistant.components.sensor import SensorDeviceClass  # noqa: F401
 from homeassistant.const import Platform, UnitOfTemperature
 from homeassistant.core import callback
+from homeassistant.data_entry_flow import section
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.selector import (
     EntityFilterSelectorConfig,
@@ -71,25 +72,26 @@ async def create_schema(hass, config_entry=None, user_input=None, config_flow=Tr
                 # device_class=SensorDeviceClass.HUMIDITY
             ))),
 
-        # Corrections
-        vol.Optional(OPT_WDA_ROOM_TEMP_CORRECTION, default=DEFAULT_ROOM_TEMP_CORRECTION):
-            NumberSelector(NumberSelectorConfig(
-                min=0.0, max=10.0, mode=NumberSelectorMode.BOX)),
-        vol.Optional(OPT_WDA_WIND_CORRECTION, default=DEFAULT_WIND_CORRECTION):
-            NumberSelector(NumberSelectorConfig(
-                min=0.0, max=2.0, step=0.1, mode=NumberSelectorMode.BOX)),
-        vol.Optional(OPT_WDA_HUMIDITY_CORRECTION, default=DEFAULT_HUMIDITY_CORRECTION):
-            NumberSelector(NumberSelectorConfig(
-                min=0.0, max=0.8, step=0.01, mode=NumberSelectorMode.BOX)),
+        vol.Required(SECTION_ADVANCED_SETTINGS): section(vol.Schema({
+            # Corrections
+            vol.Optional(OPT_WDA_ROOM_TEMP_CORRECTION, default=DEFAULT_ROOM_TEMP_CORRECTION):
+                NumberSelector(NumberSelectorConfig(
+                    min=0.0, max=10.0, mode=NumberSelectorMode.BOX)),
+            vol.Optional(OPT_WDA_WIND_CORRECTION, default=DEFAULT_WIND_CORRECTION):
+                NumberSelector(NumberSelectorConfig(
+                    min=0.0, max=2.0, step=0.1, mode=NumberSelectorMode.BOX)),
+            vol.Optional(OPT_WDA_HUMIDITY_CORRECTION, default=DEFAULT_HUMIDITY_CORRECTION):
+                NumberSelector(NumberSelectorConfig(
+                    min=0.0, max=1.0, step=0.01, mode=NumberSelectorMode.BOX)),
 
-        # Exponent
-        vol.Optional(OPT_WDA_EXP_MIN, default=DEFAULT_EXP_MIN):
-            NumberSelector(NumberSelectorConfig(
-                min=0.0, max=20.0, step=0.1, mode=NumberSelectorMode.BOX)),
-        vol.Optional(OPT_WDA_EXP_MAX, default=DEFAULT_EXP_MAX):
-            NumberSelector(NumberSelectorConfig(
-                min=0.0, max=20.0, step=0.1, mode=NumberSelectorMode.BOX)),
-
+            # Exponent
+            vol.Optional(OPT_WDA_EXP_MIN, default=DEFAULT_EXP_MIN):
+                NumberSelector(NumberSelectorConfig(
+                    min=0.0, max=20.0, step=0.1, mode=NumberSelectorMode.BOX)),
+            vol.Optional(OPT_WDA_EXP_MAX, default=DEFAULT_EXP_MAX):
+                NumberSelector(NumberSelectorConfig(
+                    min=0.0, max=20.0, step=0.1, mode=NumberSelectorMode.BOX)),
+        }), {"collapsed": True})
     })
 
 
@@ -161,11 +163,14 @@ class WDASensorOptionsFlow(config_entries.OptionsFlow):
             if not errors:
                 # Update configuration
                 self.hass.config_entries.async_update_entry(
-                    self.config_entry, options=user_input)
+                    self.config_entry,
+                    title=user_input[OPT_NAME],
+                    options=user_input)
 
                 # Send signal to subscribers
                 async_dispatcher_send(self.hass, f"{SENSOR_UPDATE_SIGNAL}_{self.config_entry.entry_id}")
 
+                # Close flow
                 return self.async_create_entry(title="", data=user_input)
 
         schema = await create_schema(

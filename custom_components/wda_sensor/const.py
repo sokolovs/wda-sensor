@@ -7,6 +7,7 @@ HA_VERSION = AwesomeVersion(HAVERSION)
 # WDA domain
 DOMAIN = "wda_sensor"
 SENSOR_UPDATE_SIGNAL = "WDA_SENSOR_OPTIONS_UPDATED"
+SECTION_ADVANCED_SETTINGS = "advanced_settings"
 
 # Config options
 OPT_NAME = "name"

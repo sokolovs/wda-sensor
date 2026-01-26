@@ -4,29 +4,37 @@
         "step": {
             "user": {
                 "title": "Configure Weather Driven Heating Control",
-                "description": "Select sensors for calculating the target heat carrier temperature.",
+                "description": "Select sensors for calculating the target Flow Temperature.",
                 "data": {
-                    "name": "Sensor Name",
+                    "name": "Name",
                     "wda_min_coolant_temp": "Min Flow Temperature",
                     "wda_max_coolant_temp": "Max Flow Temperature",
-                    "wda_target_room_temp": "Target Room Temperature",
-                    "wda_heating_curve": "Heating Curve",
-                    "wda_outside_temp": "Outside Temperature Sensor",
+                    "wda_update_interval": "Update interval",
+                    "wda_outside_temp": "Outside Temperature Sensor (Required)",
                     "wda_wind_speed": "Wind Speed Sensor (Optional)",
                     "wda_outside_humidity": "Outside Humidity Sensor (Optional)",
-                    "wda_inside_temp": "Inside Temperature Sensor (Optional)",
-                    "wda_room_temp_correction": "Inside Temperature Correction Coefficient",
-                    "wda_wind_correction": "Wind Correction Coefficient",
-                    "wda_humidity_correction": "Humidity Correction Coefficient",
-                    "wda_exp_min": "Min. Exponent (curve shaping control)",
-                    "wda_exp_max": "Max. Exponent (curve shaping control)",
-                    "wda_update_interval": "Update interval"
+                    "wda_inside_temp": "Inside Temperature Sensor (Optional)"
                 },
                 "data_description": {
-                    "wda_room_temp_correction": "For every 1°C difference between the desired and actual indoor temperature, the heating system temperature is adjusted by this value.",
-                    "wda_wind_correction": "For every 1 m/s wind speed, the heating system temperature is increased by this value.",
-                    "wda_humidity_correction": "For every 1% humidity above 50%, the heating system temperature is increased by this value",
                     "wda_update_interval": "Used for a separate sensor that is updated periodically to reduce the frequency of change the target flow temperature to your equipment."
+                },
+                "sections": {
+                    "advanced_settings": {
+                        "name": "Advanced Settings",
+                        "description": "Integration behavior fine-tuning",
+                        "data": {
+                            "wda_room_temp_correction": "Inside Temperature Correction Coefficient",
+                            "wda_wind_correction": "Wind Correction Coefficient",
+                            "wda_humidity_correction": "Humidity Correction Coefficient",
+                            "wda_exp_min": "Min. Exponent (curve shaping control)",
+                            "wda_exp_max": "Max. Exponent (curve shaping control)"
+                        },
+                        "data_description": {
+                            "wda_room_temp_correction": "For every 1°C difference between the desired and actual indoor temperature, the heating system temperature is adjusted by this value.",
+                            "wda_wind_correction": "For every 1 m/s wind speed, the heating system temperature is increased by this value.",
+                            "wda_humidity_correction": "For every 1% humidity above 50%, the heating system temperature is increased by this value"
+                        }
+                    }
                 }
             }
         },
@@ -43,27 +51,35 @@
                 "title": "Update Weather Driven Heating Control Settings",
                 "description": "Modify the settings of the Weather Driven Heating Control.",
                 "data": {
-                    "name": "Sensor Name",
+                    "name": "Name",
                     "wda_min_coolant_temp": "Min Flow Temperature",
                     "wda_max_coolant_temp": "Max Flow Temperature",
-                    "wda_target_room_temp": "Target Room Temperature",
-                    "wda_heating_curve": "Heating Curve",
-                    "wda_outside_temp": "Outside Temperature Sensor",
+                    "wda_update_interval": "Update interval",
+                    "wda_outside_temp": "Outside Temperature Sensor (Required)",
                     "wda_wind_speed": "Wind Speed Sensor (Optional)",
                     "wda_outside_humidity": "Outside Humidity Sensor (Optional)",
-                    "wda_inside_temp": "Inside Temperature Sensor (Optional)",
-                    "wda_room_temp_correction": "Room Temperature Correction Coefficient",
-                    "wda_wind_correction": "Wind Correction Coefficient",
-                    "wda_humidity_correction": "Humidity Correction Coefficient",
-                    "wda_exp_min": "Min. Exponent (curve shaping control)",
-                    "wda_exp_max": "Max. Exponent (curve shaping control)",
-                    "wda_update_interval": "Update interval"
+                    "wda_inside_temp": "Inside Temperature Sensor (Optional)"
                 },
                 "data_description": {
-                    "wda_room_temp_correction": "For every 1°C difference between the desired and actual indoor temperature, the heating system temperature is adjusted by this value.",
-                    "wda_wind_correction": "For every 1 m/s wind speed, the heating system temperature is increased by this value.",
-                    "wda_humidity_correction": "For every 1% humidity above 50%, the heating system temperature is increased by this value",
                     "wda_update_interval": "Used for a separate sensor that is updated periodically to reduce the frequency of change the target flow temperature to your equipment."
+                },
+                "sections": {
+                    "advanced_settings": {
+                        "name": "Advanced Settings",
+                        "description": "Integration behavior fine-tuning",
+                        "data": {
+                            "wda_room_temp_correction": "Room Temperature Correction Coefficient",
+                            "wda_wind_correction": "Wind Correction Coefficient",
+                            "wda_humidity_correction": "Humidity Correction Coefficient",
+                            "wda_exp_min": "Min. Exponent (curve shaping control)",
+                            "wda_exp_max": "Max. Exponent (curve shaping control)"
+                        },
+                        "data_description": {
+                            "wda_room_temp_correction": "For every 1°C difference between the desired and actual indoor temperature, the heating system temperature is adjusted by this value.",
+                            "wda_wind_correction": "For every 1 m/s wind speed, the heating system temperature is increased by this value.",
+                            "wda_humidity_correction": "For every 1% humidity above 50%, the heating system temperature is increased by this value"
+                        }
+                    }
                 }
             }
         },
