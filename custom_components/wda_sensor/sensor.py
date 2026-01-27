@@ -339,8 +339,13 @@ class WDACurveSensor(WDASensorMixin, SensorEntity):
         }
 
     def generate_graph_data(self, heating_curve, exp_min, exp_max):
+        # Graph config
+        graph_config = get_config_value(self._config, SECTION_CURVE_GRAPH_SETTINGS, {})
+        min_outside_temp = int(graph_config.get(OPT_GRAPH_MIN_OUTSIDE_TEMP, GRAPH_MIN_OUTSIDE_TEMP))
+        max_outside_temp = int(graph_config.get(OPT_GRAPH_MAX_OUTSIDE_TEMP, GRAPH_MAX_OUTSIDE_TEMP))
+
         # Range of outside temperature
-        outside_temps = list(range(GRAPH_MIN_OUTSIDE_TEMP, GRAPH_MAX_OUTSIDE_TEMP + 1))
+        outside_temps = list(range(min_outside_temp, max_outside_temp + 1))
         return {
             temp: round(calc_target(temp, heating_curve, exp_min, exp_max), 1)
             for temp in outside_temps

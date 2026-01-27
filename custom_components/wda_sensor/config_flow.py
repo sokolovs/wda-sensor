@@ -91,7 +91,23 @@ async def create_schema(hass, config_entry=None, user_input=None, config_flow=Tr
             vol.Optional(OPT_WDA_EXP_MAX, default=DEFAULT_EXP_MAX):
                 NumberSelector(NumberSelectorConfig(
                     min=0.0, max=20.0, step=0.1, mode=NumberSelectorMode.BOX)),
-        }), {"collapsed": True})
+        }), {"collapsed": True}),
+
+        vol.Required(SECTION_CURVE_GRAPH_SETTINGS): section(vol.Schema({
+            # Curve graph data settings
+            vol.Optional(OPT_GRAPH_MIN_OUTSIDE_TEMP, default=GRAPH_MIN_OUTSIDE_TEMP):
+                NumberSelector(NumberSelectorConfig(
+                    min=DEFAULT_MIN_OUTSIDE_TEMP,
+                    max=DEFAULT_MAX_OUTSIDE_TEMP,
+                    mode=NumberSelectorMode.BOX,
+                    unit_of_measurement=UnitOfTemperature.CELSIUS)),
+            vol.Optional(OPT_GRAPH_MAX_OUTSIDE_TEMP, default=GRAPH_MAX_OUTSIDE_TEMP):
+                NumberSelector(NumberSelectorConfig(
+                    min=DEFAULT_MIN_OUTSIDE_TEMP,
+                    max=DEFAULT_MAX_OUTSIDE_TEMP,
+                    mode=NumberSelectorMode.BOX,
+                    unit_of_measurement=UnitOfTemperature.CELSIUS)),
+        }), {"collapsed": True}),
     })
 
 
@@ -102,14 +118,20 @@ def check_user_input(user_input):
         max_coolant_temp = user_input[OPT_WDA_MAX_COOLANT_TEMP]
         exp_min = user_input[SECTION_ADVANCED_SETTINGS][OPT_WDA_EXP_MIN]
         exp_max = user_input[SECTION_ADVANCED_SETTINGS][OPT_WDA_EXP_MAX]
+        curve_min_temp = user_input[SECTION_CURVE_GRAPH_SETTINGS][OPT_GRAPH_MIN_OUTSIDE_TEMP]
+        curve_max_temp = user_input[SECTION_CURVE_GRAPH_SETTINGS][OPT_GRAPH_MAX_OUTSIDE_TEMP]
 
         if exp_min > exp_max:
             errors["base"] = "exp_min_must_be_less"
-            errors["wda_exp_min"] = "exp_min_must_be_less"
+            errors[OPT_WDA_EXP_MIN] = "exp_min_must_be_less"
 
         if min_coolant_temp > max_coolant_temp:
             errors["base"] = "min_coolant_temp_must_be_less"
-            errors["wda_min_coolant_temp"] = "min_coolant_temp_must_be_less"
+            errors[OPT_WDA_MIN_COOLANT_TEMP] = "min_coolant_temp_must_be_less"
+
+        if curve_min_temp > curve_max_temp:
+            errors["base"] = "graph_min_temp_must_be_less"
+            errors[OPT_GRAPH_MIN_OUTSIDE_TEMP] = "graph_min_temp_must_be_less"
     return errors
 
 
