@@ -327,8 +327,11 @@ class WDACurveSensor(WDASensorMixin, SensorEntity):
         if heating_curve is None:
             return extra_attrs
 
-        exp_min = float(get_config_value(self._config, OPT_WDA_EXP_MIN, DEFAULT_EXP_MIN))
-        exp_max = float(get_config_value(self._config, OPT_WDA_EXP_MAX, DEFAULT_EXP_MAX))
+        # Get advanced settings
+        adv_config = get_config_value(self._config, SECTION_ADVANCED_SETTINGS, {})
+
+        exp_min = float(adv_config.get(OPT_WDA_EXP_MIN, DEFAULT_EXP_MIN))
+        exp_max = float(adv_config.get(OPT_WDA_EXP_MAX, DEFAULT_EXP_MAX))
         graph_data = self.generate_graph_data(heating_curve, exp_min, exp_max)
         return {
             "graph_data_map": graph_data,

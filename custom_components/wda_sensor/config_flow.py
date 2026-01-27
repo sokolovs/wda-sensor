@@ -100,8 +100,8 @@ def check_user_input(user_input):
     if user_input is not None:
         min_coolant_temp = user_input[OPT_WDA_MIN_COOLANT_TEMP]
         max_coolant_temp = user_input[OPT_WDA_MAX_COOLANT_TEMP]
-        exp_min = user_input[OPT_WDA_EXP_MIN]
-        exp_max = user_input[OPT_WDA_EXP_MAX]
+        exp_min = user_input[SECTION_ADVANCED_SETTINGS][OPT_WDA_EXP_MIN]
+        exp_max = user_input[SECTION_ADVANCED_SETTINGS][OPT_WDA_EXP_MAX]
 
         if exp_min > exp_max:
             errors["base"] = "exp_min_must_be_less"
@@ -116,7 +116,7 @@ def check_user_input(user_input):
 class WDASensorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """ Handle a config flow for Weather Dependent Automation Sensor. """
 
-    VERSION = 1
+    VERSION = 2
 
     async def async_step_user(self, user_input=None):
         """ Handle the initial step. """
