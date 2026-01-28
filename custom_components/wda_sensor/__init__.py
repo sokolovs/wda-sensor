@@ -4,6 +4,7 @@ import logging
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 
 from .const import (
     DEFAULT_EXP_MAX,
@@ -15,6 +16,7 @@ from .const import (
     OPT_WDA_EXP_MAX,
     OPT_WDA_EXP_MIN,
     OPT_WDA_HUMIDITY_CORRECTION,
+    OPT_NAME,
     OPT_WDA_ROOM_TEMP_CORRECTION,
     OPT_WDA_WIND_CORRECTION,
     SECTION_ADVANCED_SETTINGS
@@ -27,9 +29,22 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """ Set up sensor from a config entry. """
     hass.data.setdefault(DOMAIN, {})
+
+    # Create device
+    device_registry = dr.async_get(hass)
+    device = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={(DOMAIN, config_entry.entry_id)},
+        name=config_entry.options.get(OPT_NAME) or config_entry.data.get(OPT_NAME),
+        manufacturer="Sergey V. Sokolov",
+        model="Weather Driven Heating Control"
+    )
+
+    # Create coordinator for periodic updates
     coordinator = WDAUpdateCoordinator(hass, config_entry)
     hass.data[DOMAIN][config_entry.entry_id] = {
-        "coordinator": coordinator
+        "coordinator": coordinator,
+        "device_id": device.id,
     }
 
     await hass.config_entries.async_forward_entry_setups(config_entry, [Platform.NUMBER])

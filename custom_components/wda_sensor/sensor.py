@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, Platform, UnitOfTemperature
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.event import async_call_later, async_track_state_change_event
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -94,6 +95,11 @@ class WDASensor(WDASensorMixin, SensorEntity):
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_icon = "mdi:home-thermometer"
 
+        # Device info
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, config_entry.entry_id)}
+        )
+
     async def async_added_to_hass(self):
         """ Subscribe to sensors and configuration update. """
         await super().async_added_to_hass()
@@ -183,6 +189,11 @@ class WDAPeriodicSensor(WDASensorMixin, CoordinatorEntity, SensorEntity):
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_icon = "mdi:clock"
 
+        # Device info
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, config_entry.entry_id)}
+        )
+
     async def async_added_to_hass(self):
         await super().async_added_to_hass()
 
@@ -258,6 +269,11 @@ class WDACurveSensor(WDASensorMixin, SensorEntity):
         self._attr_available = False
         self._attr_native_value = None
         self._attr_icon = "mdi:chart-bell-curve-cumulative"
+
+        # Device info
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, config_entry.entry_id)}
+        )
 
     async def async_added_to_hass(self):
         """ Subscribe to sensors and configuration update. """
