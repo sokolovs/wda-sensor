@@ -37,7 +37,7 @@
                     },
                     "curve_graph_settings": {
                         "name": "Heating Curve Graph Settings",
-                        "description": "Specify the outside temperature limits (on the X-axis) for calculating the heating curve data. Values must be within the range from -50 to 20. These settings affect the curve visualization only.",
+                        "description": "Specify the outside temperature borders (on the X-axis) for calculating the heating curve data. Values must be within the range from -50 to 20. These settings affect the curve visualization only.",
                         "data": {
                             "wda_graph_min_outside_temp": "Min. Outside Temperature",
                             "wda_graph_max_outside_temp": "Max. Outside Temperature"
@@ -92,7 +92,7 @@
                     },
                     "curve_graph_settings": {
                         "name": "Heating Curve Graph Settings",
-                        "description": "Specify the outside temperature limits (on the X-axis) for calculating the heating curve data. Values must be within the range from -50 to 20. These settings affect the curve visualization only.",
+                        "description": "Specify the outside temperature borders (on the X-axis) for calculating the heating curve data. Values must be within the range from -50 to 20. These settings affect the curve visualization only.",
                         "data": {
                             "wda_graph_min_outside_temp": "Min. Outside Temperature",
                             "wda_graph_max_outside_temp": "Max. Outside Temperature"
