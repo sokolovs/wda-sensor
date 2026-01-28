@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, Platform, UnitOfTemperature
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.event import async_call_later, async_track_state_change_event
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -94,6 +95,11 @@ class WDASensor(WDASensorMixin, SensorEntity):
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_icon = "mdi:home-thermometer"
 
+        # Device info
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, config_entry.entry_id)}
+        )
+
     async def async_added_to_hass(self):
         """ Subscribe to sensors and configuration update. """
         await super().async_added_to_hass()
@@ -183,6 +189,11 @@ class WDAPeriodicSensor(WDASensorMixin, CoordinatorEntity, SensorEntity):
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_icon = "mdi:clock"
 
+        # Device info
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, config_entry.entry_id)}
+        )
+
     async def async_added_to_hass(self):
         await super().async_added_to_hass()
 
@@ -259,6 +270,11 @@ class WDACurveSensor(WDASensorMixin, SensorEntity):
         self._attr_native_value = None
         self._attr_icon = "mdi:chart-bell-curve-cumulative"
 
+        # Device info
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, config_entry.entry_id)}
+        )
+
     async def async_added_to_hass(self):
         """ Subscribe to sensors and configuration update. """
         await super().async_added_to_hass()
@@ -327,8 +343,11 @@ class WDACurveSensor(WDASensorMixin, SensorEntity):
         if heating_curve is None:
             return extra_attrs
 
-        exp_min = float(get_config_value(self._config, OPT_WDA_EXP_MIN, DEFAULT_EXP_MIN))
-        exp_max = float(get_config_value(self._config, OPT_WDA_EXP_MAX, DEFAULT_EXP_MAX))
+        # Get advanced settings
+        adv_config = get_config_value(self._config, SECTION_ADVANCED_SETTINGS, {})
+
+        exp_min = float(adv_config.get(OPT_WDA_EXP_MIN, DEFAULT_EXP_MIN))
+        exp_max = float(adv_config.get(OPT_WDA_EXP_MAX, DEFAULT_EXP_MAX))
         graph_data = self.generate_graph_data(heating_curve, exp_min, exp_max)
         return {
             "graph_data_map": graph_data,
@@ -336,8 +355,13 @@ class WDACurveSensor(WDASensorMixin, SensorEntity):
         }
 
     def generate_graph_data(self, heating_curve, exp_min, exp_max):
+        # Graph config
+        graph_config = get_config_value(self._config, SECTION_CURVE_GRAPH_SETTINGS, {})
+        min_outside_temp = int(graph_config.get(OPT_GRAPH_MIN_OUTSIDE_TEMP, GRAPH_MIN_OUTSIDE_TEMP))
+        max_outside_temp = int(graph_config.get(OPT_GRAPH_MAX_OUTSIDE_TEMP, GRAPH_MAX_OUTSIDE_TEMP))
+
         # Range of outside temperature
-        outside_temps = list(range(GRAPH_MIN_OUTSIDE_TEMP, GRAPH_MAX_OUTSIDE_TEMP + 1))
+        outside_temps = list(range(min_outside_temp, max_outside_temp + 1))
         return {
             temp: round(calc_target(temp, heating_curve, exp_min, exp_max), 1)
             for temp in outside_temps

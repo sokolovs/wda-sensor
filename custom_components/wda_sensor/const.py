@@ -7,6 +7,8 @@ HA_VERSION = AwesomeVersion(HAVERSION)
 # WDA domain
 DOMAIN = "wda_sensor"
 SENSOR_UPDATE_SIGNAL = "WDA_SENSOR_OPTIONS_UPDATED"
+SECTION_ADVANCED_SETTINGS = "advanced_settings"
+SECTION_CURVE_GRAPH_SETTINGS = "curve_graph_settings"
 
 # Config options
 OPT_NAME = "name"
@@ -24,6 +26,8 @@ OPT_WDA_WIND_CORRECTION = "wda_wind_correction"
 OPT_WDA_HUMIDITY_CORRECTION = "wda_humidity_correction"
 OPT_WDA_EXP_MIN = "wda_exp_min"
 OPT_WDA_EXP_MAX = "wda_exp_max"
+OPT_GRAPH_MIN_OUTSIDE_TEMP = "wda_graph_min_outside_temp"
+OPT_GRAPH_MAX_OUTSIDE_TEMP = "wda_graph_max_outside_temp"
 
 # Min/max heating curve number
 MIN_HEATING_CURVE = 1

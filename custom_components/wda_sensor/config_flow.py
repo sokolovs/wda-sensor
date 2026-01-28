@@ -4,6 +4,7 @@ from homeassistant import config_entries
 from homeassistant.components.sensor import SensorDeviceClass  # noqa: F401
 from homeassistant.const import Platform, UnitOfTemperature
 from homeassistant.core import callback
+from homeassistant.data_entry_flow import section
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.selector import (
     EntityFilterSelectorConfig,
@@ -71,25 +72,42 @@ async def create_schema(hass, config_entry=None, user_input=None, config_flow=Tr
                 # device_class=SensorDeviceClass.HUMIDITY
             ))),
 
-        # Corrections
-        vol.Optional(OPT_WDA_ROOM_TEMP_CORRECTION, default=DEFAULT_ROOM_TEMP_CORRECTION):
-            NumberSelector(NumberSelectorConfig(
-                min=0.0, max=10.0, mode=NumberSelectorMode.BOX)),
-        vol.Optional(OPT_WDA_WIND_CORRECTION, default=DEFAULT_WIND_CORRECTION):
-            NumberSelector(NumberSelectorConfig(
-                min=0.0, max=2.0, step=0.1, mode=NumberSelectorMode.BOX)),
-        vol.Optional(OPT_WDA_HUMIDITY_CORRECTION, default=DEFAULT_HUMIDITY_CORRECTION):
-            NumberSelector(NumberSelectorConfig(
-                min=0.0, max=0.8, step=0.01, mode=NumberSelectorMode.BOX)),
+        vol.Required(SECTION_ADVANCED_SETTINGS): section(vol.Schema({
+            # Corrections
+            vol.Optional(OPT_WDA_ROOM_TEMP_CORRECTION, default=DEFAULT_ROOM_TEMP_CORRECTION):
+                NumberSelector(NumberSelectorConfig(
+                    min=0.0, max=10.0, mode=NumberSelectorMode.BOX)),
+            vol.Optional(OPT_WDA_WIND_CORRECTION, default=DEFAULT_WIND_CORRECTION):
+                NumberSelector(NumberSelectorConfig(
+                    min=0.0, max=2.0, step=0.1, mode=NumberSelectorMode.BOX)),
+            vol.Optional(OPT_WDA_HUMIDITY_CORRECTION, default=DEFAULT_HUMIDITY_CORRECTION):
+                NumberSelector(NumberSelectorConfig(
+                    min=0.0, max=1.0, step=0.01, mode=NumberSelectorMode.BOX)),
 
-        # Exponent
-        vol.Optional(OPT_WDA_EXP_MIN, default=DEFAULT_EXP_MIN):
-            NumberSelector(NumberSelectorConfig(
-                min=0.0, max=20.0, step=0.1, mode=NumberSelectorMode.BOX)),
-        vol.Optional(OPT_WDA_EXP_MAX, default=DEFAULT_EXP_MAX):
-            NumberSelector(NumberSelectorConfig(
-                min=0.0, max=20.0, step=0.1, mode=NumberSelectorMode.BOX)),
+            # Exponent
+            vol.Optional(OPT_WDA_EXP_MIN, default=DEFAULT_EXP_MIN):
+                NumberSelector(NumberSelectorConfig(
+                    min=0.0, max=20.0, step=0.1, mode=NumberSelectorMode.BOX)),
+            vol.Optional(OPT_WDA_EXP_MAX, default=DEFAULT_EXP_MAX):
+                NumberSelector(NumberSelectorConfig(
+                    min=0.0, max=20.0, step=0.1, mode=NumberSelectorMode.BOX)),
+        }), {"collapsed": True}),
 
+        vol.Required(SECTION_CURVE_GRAPH_SETTINGS): section(vol.Schema({
+            # Curve graph data settings
+            vol.Optional(OPT_GRAPH_MIN_OUTSIDE_TEMP, default=GRAPH_MIN_OUTSIDE_TEMP):
+                NumberSelector(NumberSelectorConfig(
+                    min=DEFAULT_MIN_OUTSIDE_TEMP,
+                    max=DEFAULT_MAX_OUTSIDE_TEMP,
+                    mode=NumberSelectorMode.BOX,
+                    unit_of_measurement=UnitOfTemperature.CELSIUS)),
+            vol.Optional(OPT_GRAPH_MAX_OUTSIDE_TEMP, default=GRAPH_MAX_OUTSIDE_TEMP):
+                NumberSelector(NumberSelectorConfig(
+                    min=DEFAULT_MIN_OUTSIDE_TEMP,
+                    max=DEFAULT_MAX_OUTSIDE_TEMP,
+                    mode=NumberSelectorMode.BOX,
+                    unit_of_measurement=UnitOfTemperature.CELSIUS)),
+        }), {"collapsed": True}),
     })
 
 
@@ -98,23 +116,29 @@ def check_user_input(user_input):
     if user_input is not None:
         min_coolant_temp = user_input[OPT_WDA_MIN_COOLANT_TEMP]
         max_coolant_temp = user_input[OPT_WDA_MAX_COOLANT_TEMP]
-        exp_min = user_input[OPT_WDA_EXP_MIN]
-        exp_max = user_input[OPT_WDA_EXP_MAX]
+        exp_min = user_input[SECTION_ADVANCED_SETTINGS][OPT_WDA_EXP_MIN]
+        exp_max = user_input[SECTION_ADVANCED_SETTINGS][OPT_WDA_EXP_MAX]
+        curve_min_temp = user_input[SECTION_CURVE_GRAPH_SETTINGS][OPT_GRAPH_MIN_OUTSIDE_TEMP]
+        curve_max_temp = user_input[SECTION_CURVE_GRAPH_SETTINGS][OPT_GRAPH_MAX_OUTSIDE_TEMP]
 
         if exp_min > exp_max:
             errors["base"] = "exp_min_must_be_less"
-            errors["wda_exp_min"] = "exp_min_must_be_less"
+            errors[OPT_WDA_EXP_MIN] = "exp_min_must_be_less"
 
         if min_coolant_temp > max_coolant_temp:
             errors["base"] = "min_coolant_temp_must_be_less"
-            errors["wda_min_coolant_temp"] = "min_coolant_temp_must_be_less"
+            errors[OPT_WDA_MIN_COOLANT_TEMP] = "min_coolant_temp_must_be_less"
+
+        if curve_min_temp > curve_max_temp:
+            errors["base"] = "graph_min_temp_must_be_less"
+            errors[OPT_GRAPH_MIN_OUTSIDE_TEMP] = "graph_min_temp_must_be_less"
     return errors
 
 
 class WDASensorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """ Handle a config flow for Weather Dependent Automation Sensor. """
 
-    VERSION = 1
+    VERSION = 2
 
     async def async_step_user(self, user_input=None):
         """ Handle the initial step. """
@@ -161,11 +185,14 @@ class WDASensorOptionsFlow(config_entries.OptionsFlow):
             if not errors:
                 # Update configuration
                 self.hass.config_entries.async_update_entry(
-                    self.config_entry, options=user_input)
+                    self.config_entry,
+                    title=user_input[OPT_NAME],
+                    options=user_input)
 
                 # Send signal to subscribers
                 async_dispatcher_send(self.hass, f"{SENSOR_UPDATE_SIGNAL}_{self.config_entry.entry_id}")
 
+                # Close flow
                 return self.async_create_entry(title="", data=user_input)
 
         schema = await create_schema(

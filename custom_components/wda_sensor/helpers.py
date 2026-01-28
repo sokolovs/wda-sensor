@@ -97,14 +97,17 @@ async def update(hass, config):
     max_coolant_temp = int(
         get_config_value(config, OPT_WDA_MAX_COOLANT_TEMP, DEFAULT_MAX_COOLANT_TEMP))
 
+    # Get advanced settings
+    adv_config = get_config_value(config, SECTION_ADVANCED_SETTINGS, {})
+
     # Correction settings
-    room_temp_correction = float(get_config_value(config, OPT_WDA_ROOM_TEMP_CORRECTION, 0))
-    wind_correction = float(get_config_value(config, OPT_WDA_WIND_CORRECTION, 0))
-    humidity_correction = float(get_config_value(config, OPT_WDA_HUMIDITY_CORRECTION, 0))
+    room_temp_correction = float(adv_config.get(OPT_WDA_ROOM_TEMP_CORRECTION, 0))
+    wind_correction = float(adv_config.get(OPT_WDA_WIND_CORRECTION, 0))
+    humidity_correction = float(adv_config.get(OPT_WDA_HUMIDITY_CORRECTION, 0))
 
     # Exponent range
-    exp_min = float(get_config_value(config, OPT_WDA_EXP_MIN, DEFAULT_EXP_MIN))
-    exp_max = float(get_config_value(config, OPT_WDA_EXP_MAX, DEFAULT_EXP_MAX))
+    exp_min = float(adv_config.get(OPT_WDA_EXP_MIN, DEFAULT_EXP_MIN))
+    exp_max = float(adv_config.get(OPT_WDA_EXP_MAX, DEFAULT_EXP_MAX))
 
     # Get data from number inputs
     target_room_temp = await get_sensor_value_by_uniq(
